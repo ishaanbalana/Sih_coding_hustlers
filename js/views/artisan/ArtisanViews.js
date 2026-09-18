@@ -1,0 +1,746 @@
+/* ==========================================================================
+   CRAFTORA - Clean Artisan Experience Views (Screens 2–16)
+   Strict Visual Polish matching Artisan Screen.pdf
+   ========================================================================== */
+
+import { appState } from '../../state.js';
+import { renderSmartPricingCalculator } from '../../components/SmartPricingCalculator.js';
+import { renderDigitalProductPassportCard } from '../../components/DigitalProductPassportCard.js';
+import { renderAIChecklist } from '../../components/AIChecklist.js';
+import { renderIcon } from '../../components/Icons.js';
+
+export function renderArtisanView(screen) {
+  const state = appState.data;
+  const products = state.products;
+  const selectedProduct = products.find(p => p.id === state.selectedProductId) || products[0];
+
+  switch (screen) {
+    case 'onboarding':
+      return renderScreen2_OnboardingChoice();
+    case 'profile_step1':
+      return renderScreen3_ProfileSetup();
+    case 'welcome':
+      return renderScreen4_Welcome();
+    case 'add_product':
+      return renderScreen5_ProductCreationEntry();
+    case 'ai_analysis':
+      return renderScreen6_AIAnalysis();
+    case 'review_product':
+      return renderScreen7_ReviewProduct(selectedProduct);
+    case 'smart_pricing':
+      return renderScreen8_SmartPricing(selectedProduct);
+    case 'market_matches':
+      return renderScreen9_MarketMatches(selectedProduct);
+    case 'passport':
+      return renderScreen10_Passport(selectedProduct);
+    case 'provenance':
+      return renderScreen11_Provenance(selectedProduct);
+    case 'my_crafts':
+      return renderScreen14_MyCrafts(products);
+    case 'product_detail':
+      return renderScreen15_ProductDetail(selectedProduct);
+    case 'edit_product':
+      return renderScreen16_EditProduct(selectedProduct);
+    case 'dashboard':
+    default:
+      return renderScreen13_Dashboard(state);
+  }
+}
+
+// Screen 2 — Artisan Entry / Onboarding Choice
+function renderScreen2_OnboardingChoice() {
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <h2 style="font-size: 20px; margin-bottom: 4px;">Welcome, Artisan 👋</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+        Let's bring your craft online.
+      </p>
+
+      <div class="craft-card" style="margin-bottom: 24px; padding: 24px; background: var(--bg-elevated);">
+        <div style="color: var(--copper); margin-bottom: 10px;">${renderIcon('palette', '', 48)}</div>
+        <div style="font-size: 14px; font-weight: 700; color: var(--copper);">ARTISAN CRAFT ILLUSTRATION</div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; letter-spacing: 0.05em;">
+        How would you like to continue?
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 320px; margin: 0 auto 20px;">
+        <button class="btn-voice" onclick="window.openVoiceAssistantProfile()">
+          ${renderIcon('mic', '', 18)} Continue with Voice ${renderIcon('arrowRight', '', 16)}
+        </button>
+
+        <button class="btn-primary" onclick="window.navArtisan('profile_step1')">
+          ${renderIcon('user', '', 18)} Continue with Mobile ${renderIcon('arrowRight', '', 16)}
+        </button>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-muted);">
+        Already registered? <a href="#" onclick="window.toggleArtisanAuthMode(); return false;" style="color: var(--copper); text-decoration: underline;">Sign In Directly</a>
+      </div>
+
+      <div style="margin-top: 30px; font-size: 11px; color: var(--text-copper); font-weight: 700; letter-spacing: 0.05em;">
+        Simple • Voice-first • Multilingual • Easy
+      </div>
+    </div>
+  `;
+}
+
+// Screen 3 — Profile Setup Step 1
+function renderScreen3_ProfileSetup() {
+  return `
+    <div style="padding: 24px 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px;">Create your profile</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+        Let's get to know your craft. You can type or use your voice.
+      </p>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg-elevated); border: 2px dashed var(--text-copper); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: var(--copper); cursor: pointer;" onclick="alert('Profile photo selected!')">
+          ${renderIcon('camera', '', 28)}
+        </div>
+        <div style="font-size: 12px; color: var(--copper); font-weight: 600;">Add Photo</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" id="artisan_name_input" class="form-input" value="Ramesh Kumar" placeholder="Enter your name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Craft</label>
+        <select id="artisan_craft_select" class="form-select">
+          <option value="Bamboo Craft" selected>Bamboo Craft (Assam)</option>
+          <option value="Madhubani Painting">Madhubani Painting (Bihar)</option>
+          <option value="Blue Pottery">Blue Pottery (Jaipur, Rajasthan)</option>
+          <option value="Phulkari Embroidery">Phulkari Embroidery (Punjab)</option>
+          <option value="Banarasi Weaving">Banarasi Weaving (Varanasi, UP)</option>
+          <option value="Terracotta Clay Work">Terracotta Clay Work (Bankura, West Bengal)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" id="artisan_location_input" class="form-input" value="Assam, India" placeholder="State / District">
+      </div>
+
+      <button class="btn-voice" style="margin-bottom: 16px;" onclick="window.openVoiceAssistantProfile()">
+        ${renderIcon('mic', '', 18)} Tell us by voice | Speak in your language
+      </button>
+
+      <button class="btn-primary" onclick="window.completeProfileSetup()">
+        Continue ${renderIcon('arrowRight', '', 16)} (1 / 2)
+      </button>
+    </div>
+  `;
+}
+
+// Screen 4 — First-time Artisan Welcome
+function renderScreen4_Welcome() {
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <h2 style="font-size: 22px; margin-bottom: 4px;">Welcome to CRAFTORA 👋</h2>
+      <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 28px;">
+        Your digital craft journey starts here.<br>What would you like to do?
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; max-width: 340px; margin: 0 auto 24px;">
+        <button class="btn-primary" onclick="window.navArtisan('dashboard')">
+          ${renderIcon('sparkles', '', 18)} Explore CRAFTORA ${renderIcon('arrowRight', '', 16)}
+          <div style="font-size: 11px; font-weight: 400; opacity: 0.9;">Discover your workspace</div>
+        </button>
+
+        <button class="btn-secondary" style="border-color: var(--text-copper);" onclick="window.navArtisan('add_product')">
+          ${renderIcon('palette', '', 18)} Add My First Product ${renderIcon('arrowRight', '', 16)}
+          <div style="font-size: 11px; font-weight: 400; opacity: 0.9;">Create your first listing</div>
+        </button>
+      </div>
+
+      <a href="#" onclick="window.navArtisan('dashboard'); return false;" style="font-size: 13px; color: var(--text-muted);">
+        Maybe later
+      </a>
+    </div>
+  `;
+}
+
+// Screen 5 — Product Creation Entry
+function renderScreen5_ProductCreationEntry() {
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <h2 style="font-size: 20px; margin-bottom: 4px;">Add Your Product</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+        Let's turn your craft into a digital catalogue.
+      </p>
+
+      <div class="craft-card" style="padding: 24px; margin-bottom: 20px; cursor: pointer;" onclick="window.triggerProductImageUpload()">
+        <div style="color: var(--copper); margin-bottom: 8px;">${renderIcon('camera', '', 40)}</div>
+        <div style="font-weight: 700; font-size: 15px;">Take / Upload Photo</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Show us your craft</div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 20px;">OR</div>
+
+      <div class="craft-card" style="padding: 24px; margin-bottom: 24px; border-color: var(--terracotta); cursor: pointer;" onclick="window.openVoiceAssistantProduct()">
+        <div style="color: var(--terracotta); margin-bottom: 8px;">${renderIcon('mic', '', 40)}</div>
+        <div style="font-weight: 700; font-size: 15px; color: var(--terracotta);">Describe by Voice</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Speak in your language (Hindi / Regional)</div>
+      </div>
+
+      ${renderAIChecklist(false)}
+    </div>
+  `;
+}
+
+// Screen 6 — AI Catalogue Processing State
+function renderScreen6_AIAnalysis() {
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <h2 style="font-size: 20px; margin-bottom: 12px; color: var(--copper); display: flex; align-items: center; justify-content: center; gap: 8px;">
+        ${renderIcon('sparkles', '', 20)} Creating Your Listing
+      </h2>
+
+      <div style="border-radius: var(--radius-md); overflow: hidden; max-height: 180px; margin: 0 auto 16px; border: 1px solid var(--border-green);">
+        <img src="assets/bamboo_basket.png" style="width: 100%; height: 180px; object-fit: cover;">
+      </div>
+
+      <div style="font-size: 13px; color: var(--text-secondary); font-style: italic; margin-bottom: 16px;">
+        CRAFTORA AI is analyzing your craft...
+      </div>
+
+      ${renderAIChecklist(true)}
+
+      <div class="craft-card" style="text-align: left; margin-top: 16px;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-copper); text-transform: uppercase;">
+          AI Generated — Draft Preview
+        </div>
+        <div style="font-size: 15px; font-weight: 700; margin-top: 4px;">Bamboo Handwoven Basket</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">Category: Bamboo Craft • Material: Natural Bamboo</div>
+      </div>
+
+      <button class="btn-primary" style="margin-top: 16px;" onclick="window.navArtisan('review_product')">
+        ${renderIcon('sparkles', '', 16)} AI Generated — Review & Edit ${renderIcon('arrowRight', '', 16)}
+      </button>
+    </div>
+  `;
+}
+
+// Screen 7 — Review & Edit Draft
+function renderScreen7_ReviewProduct(product) {
+  return `
+    <div style="padding: 24px 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px;">Review Your Product</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        AI has prepared a draft listing.
+      </p>
+
+      <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border-medium);">
+        <img src="${product.imageUrl}" style="width: 100%; height: 180px; object-fit: cover;">
+        <span class="badge-pill badge-gold" style="position: absolute; bottom: 10px; right: 10px;">
+          ${renderIcon('sparkles', '', 12)} AI Enhanced
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Product Name</label>
+        <input type="text" id="edit_draft_title" class="form-input" value="${product.title}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input type="text" id="edit_draft_cat" class="form-input" value="${product.category}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Materials</label>
+        <input type="text" id="edit_draft_mat" class="form-input" value="${product.materials.join(', ')}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="edit_draft_desc" class="form-textarea" rows="3">${product.description}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <input type="text" id="edit_draft_tags" class="form-input" value="${product.tags.join(', ')}">
+      </div>
+
+      <button class="btn-voice" style="margin-bottom: 16px;" onclick="window.openVoiceAssistantProduct()">
+        ${renderIcon('mic', '', 18)} Make changes by voice | Speak in your language
+      </button>
+
+      <button class="btn-primary" onclick="window.saveDraftAndContinuePricing('${product.id}')">
+        ${renderIcon('sparkles', '', 16)} Continue to Pricing ${renderIcon('arrowRight', '', 16)}
+      </button>
+    </div>
+  `;
+}
+
+// Screen 8 — Smart Pricing
+function renderScreen8_SmartPricing(product) {
+  return `
+    <div style="padding: 24px 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+        ${renderIcon('rupee', '', 20)} Smart Pricing
+      </h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Price your craft fairly based on costs & sample market benchmarks.
+      </p>
+
+      ${renderSmartPricingCalculator(product)}
+
+      <button class="btn-primary" style="margin-top: 16px;" onclick="window.navArtisan('market_matches')">
+        Continue to Market Linkage ${renderIcon('arrowRight', '', 16)}
+      </button>
+    </div>
+  `;
+}
+
+// Screen 9 — Market Linkage & AI-Assisted Buyer Matching
+function renderScreen9_MarketMatches(product) {
+  return `
+    <div style="padding: 24px 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+        ${renderIcon('users', '', 20)} Find Your Market
+      </h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Connect with relevant buyers using AI-Assisted Buyer Matching.
+      </p>
+
+      <div class="craft-card" style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px;">
+        <img src="${product.imageUrl}" style="width: 60px; height: 60px; border-radius: var(--radius-sm); object-fit: cover;">
+        <div>
+          <div style="font-weight: 700; font-size: 14px;">${product.title}</div>
+          <div style="font-size: 12px; color: var(--copper);">₹${product.price} • ${product.category}</div>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-copper); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+        ${renderIcon('sparkles', '', 14)} AI-Assisted Buyer Matching
+      </div>
+
+      ${product.buyerMatches.map(m => `
+        <div class="craft-card" style="margin-bottom: 12px; border-left: 3px solid var(--text-copper);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="font-size: 14px; display: flex; align-items: center; gap: 6px;">
+              ${renderIcon('store', '', 16)} ${m.buyerCategory}
+            </strong>
+            <span class="badge-pill badge-gold">Match: ${m.matchPercentage}%</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
+            <strong>Looking for:</strong> ${m.lookingFor}
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+            Requirements: ${m.requirement || 'Bulk handmade inventory'}
+          </div>
+          <button class="btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="window.viewOpportunity('${m.buyerCategory}')">
+            View Opportunity ${renderIcon('arrowRight', '', 14)}
+          </button>
+        </div>
+      `).join('')}
+
+      <div class="disclaimer-box" style="margin-top: 14px;">
+        <span>${renderIcon('alertCircle', '', 16)}</span>
+        <div>
+          <strong>AI Matching Disclaimer:</strong> Buyer matches reflect target market profile demand.
+        </div>
+      </div>
+
+      <button class="btn-primary" style="margin-top: 16px;" onclick="window.navArtisan('passport')">
+        Continue → Digital Product Passport
+      </button>
+    </div>
+  `;
+}
+
+// Screen 10 — Passport View
+function renderScreen10_Passport(product) {
+  return `
+    <div style="padding: 24px 20px;">
+      ${renderDigitalProductPassportCard(product)}
+      
+      <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn-primary" onclick="window.navArtisan('provenance')">
+          ${renderIcon('shield', '', 16)} View Verification History
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Screen 11 — Provenance & Verification History
+function renderScreen11_Provenance(product) {
+  return `
+    <div style="padding: 24px 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+        ${renderIcon('shield', '', 20)} Provenance Record
+      </h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Product history & verification events.
+      </p>
+
+      <div class="craft-card">
+        <h4 style="font-size: 16px;">${product.title}</h4>
+        <div style="font-size: 11px; color: var(--copper); font-weight: 700;">PRODUCT ID: ${product.id}</div>
+        <span class="badge-pill badge-emerald" style="margin-top: 8px;">Registered Product</span>
+      </div>
+
+      <div class="craft-card">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-copper); margin-bottom: 12px;">
+          VERIFICATION HISTORY LOG
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+          <div style="border-left: 2px solid var(--success); padding-left: 10px;">
+            <div style="font-weight: 700; color: var(--success);">✓ Product Registered</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">17 Sep 2026 • Artisan: ${product.artisanName}</div>
+          </div>
+
+          <div style="border-left: 2px solid var(--success); padding-left: 10px;">
+            <div style="font-weight: 700; color: var(--success);">✓ Product Details Recorded</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">17 Sep 2026 • Provenance record created</div>
+          </div>
+
+          <div style="border-left: 2px solid var(--text-copper); padding-left: 10px;">
+            <div style="font-weight: 700; color: var(--copper);">o Verification Review</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Pending / Verification Approved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prototype Blockchain Box -->
+      <div class="craft-card" style="border-color: var(--terracotta);">
+        <div style="font-size: 12px; font-weight: 700; color: var(--terracotta); text-transform: uppercase; margin-bottom: 8px;">
+          🔐 Prototype Blockchain Record
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
+          Network: Polygon Testnet Demo
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary);">
+          Record Status: Recorded (Simulated ledger record)
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="window.navArtisan('dashboard')">
+        Back to Artisan Dashboard ${renderIcon('arrowRight', '', 16)}
+      </button>
+    </div>
+  `;
+}
+
+// Screen 13 — Artisan Dashboard / Home (With Emotional Brand Message)
+function renderScreen13_Dashboard(state) {
+  const artisan = state.artisanAuth.artisanProfile;
+  const products = state.products;
+
+  return `
+    <div style="padding: 20px;">
+      <!-- Greeting Header -->
+      <div style="margin-bottom: 18px;">
+        <h2 style="font-size: 21px; font-weight: 800;">नमस्ते, ${artisan.name} 👋</h2>
+        <div style="font-size: 13px; color: var(--copper); font-weight: 600;">Your craft, your business.</div>
+      </div>
+
+      <!-- Summary Stats Card -->
+      <div class="craft-card craft-card-glow" style="margin-bottom: 20px;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-copper); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          ${renderIcon('palette', '', 14)} YOUR CRAFT SUMMARY
+        </div>
+        
+        <div style="display: flex; gap: 24px; margin-bottom: 16px;">
+          <div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--text-primary);">${products.length}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Products</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--copper);">${products.filter(p=>p.passportAvailable).length}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Passports</div>
+          </div>
+        </div>
+
+        <button class="btn-secondary" style="padding: 8px 14px; font-size: 13px;" onclick="window.navArtisan('my_crafts')">
+          View My Crafts ${renderIcon('arrowRight', '', 14)}
+        </button>
+      </div>
+
+      <!-- Actions Section -->
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em;">
+        What would you like to do?
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <button class="btn-primary" onclick="window.navArtisan('add_product')">
+          ${renderIcon('camera', '', 18)} ADD NEW CRAFT
+          <div style="font-size: 11px; font-weight: 400; opacity: 0.9;">Take a photo or speak</div>
+        </button>
+
+        <div class="grid-2">
+          <button class="btn-secondary" onclick="window.navArtisan('smart_pricing')">
+            ${renderIcon('rupee', '', 16)} Suggested Prices
+          </button>
+          <button class="btn-secondary" onclick="window.navArtisan('market_matches')">
+            ${renderIcon('users', '', 16)} Find Buyers
+          </button>
+        </div>
+
+        <button class="btn-secondary" onclick="window.navArtisan('passport')">
+          ${renderIcon('globe', '', 16)} My Product Passports
+        </button>
+
+        <button class="btn-voice" onclick="window.openVoiceAssistantProfile()">
+          ${renderIcon('mic', '', 18)} Speak to CRAFTORA (Voice Assistant)
+        </button>
+      </div>
+
+      <!-- EMPTY STATE IF 0 PRODUCTS -->
+      ${products.length === 0 ? `
+        <div class="craft-card" style="text-align: center; padding: 28px;">
+          <div style="color: var(--copper); margin-bottom: 8px;">${renderIcon('palette', '', 36)}</div>
+          <h4 style="font-size: 15px; margin-bottom: 4px;">No Crafts Added Yet</h4>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+            Create your first digital craft catalog using photo or voice.
+          </p>
+          <button class="btn-primary" onclick="window.navArtisan('add_product')">
+            ${renderIcon('plus', '', 16)} Add First Craft
+          </button>
+        </div>
+      ` : ''}
+
+      <!-- Incoming Buyer Inquiries Box -->
+      ${state.buyerRequests.length > 0 ? `
+        <div class="craft-card" style="border-left: 3px solid var(--terracotta);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--terracotta); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            ${renderIcon('store', '', 14)} INCOMING BUYER INQUIRY (${state.buyerRequests.length})
+          </div>
+          <div style="font-size: 14px; font-weight: 700;">${state.buyerRequests[0].buyerName}</div>
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+            "${state.buyerRequests[0].message}"
+          </div>
+          <span class="badge-pill badge-gold">${state.buyerRequests[0].interestType}</span>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// Screen 14 — My Crafts / Product Library
+function renderScreen14_MyCrafts(products) {
+  if (products.length === 0) {
+    return `
+      <div style="padding: 20px; text-align: center;">
+        <h2 style="font-size: 20px; margin-bottom: 4px;">🎨 My Crafts</h2>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">Your handmade products</p>
+        
+        <div class="craft-card" style="padding: 30px 20px;">
+          <div style="color: var(--copper); margin-bottom: 10px;">${renderIcon('package', '', 40)}</div>
+          <h3 style="font-size: 16px; margin-bottom: 6px;">No products in your digital catalogue</h3>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+            Upload your craft photos or describe them by voice.
+          </p>
+          <button class="btn-primary" onclick="window.navArtisan('add_product')">
+            ${renderIcon('plus', '', 16)} Add New Craft
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div style="padding: 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px;">🎨 My Crafts</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Your handmade products catalog.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+        ${products.map(p => `
+          <div class="craft-card" style="display: flex; gap: 14px; align-items: center;">
+            <img src="${p.imageUrl}" style="width: 80px; height: 80px; border-radius: var(--radius-md); object-fit: cover;">
+            <div style="flex: 1;">
+              <h4 style="font-size: 15px; margin-bottom: 2px;">${p.title}</h4>
+              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">${p.category}</div>
+              <div style="font-size: 14px; font-weight: 800; color: var(--copper);">₹${p.price}</div>
+              <div style="margin-top: 4px;">
+                <span class="badge-pill badge-emerald">🌐 Passport Available</span>
+              </div>
+            </div>
+            <button class="btn-icon" onclick="window.viewArtisanProductDetail('${p.id}')">
+              ${renderIcon('arrowRight', '', 16)}
+            </button>
+          </div>
+        `).join('')}
+      </div>
+
+      <button class="btn-primary" onclick="window.navArtisan('add_product')">
+        ${renderIcon('plus', '', 16)} Add New Craft
+      </button>
+    </div>
+  `;
+}
+
+// Screen 15 — Single Product Details
+function renderScreen15_ProductDetail(product) {
+  return `
+    <div style="padding: 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 14px;">My Product</h2>
+
+      <div class="craft-card">
+        <img src="${product.imageUrl}" style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 14px;">
+
+        <h3 style="font-size: 18px; margin-bottom: 4px;">${product.title}</h3>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">${product.category}</div>
+
+        <div style="font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+          ${renderIcon('rupee', '', 16)} <strong>Selling Price:</strong> ₹${product.price}
+        </div>
+        <div style="font-size: 13px; margin-bottom: 6px;">
+          🌿 <strong>Material:</strong> ${product.materials.join(', ')}
+        </div>
+        <div style="font-size: 13px; display: flex; align-items: center; gap: 6px;">
+          ${renderIcon('mappin', '', 14)} <strong>Made in:</strong> ${product.artisanLocation}
+        </div>
+      </div>
+
+      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em;">
+        What would you like to do?
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button class="btn-secondary" onclick="window.navArtisan('edit_product')">
+          ${renderIcon('palette', '', 16)} Edit Product
+        </button>
+
+        <button class="btn-secondary" onclick="window.navArtisan('smart_pricing')">
+          ${renderIcon('rupee', '', 16)} Change Price
+        </button>
+
+        <button class="btn-secondary" onclick="window.navArtisan('passport')">
+          ${renderIcon('globe', '', 16)} View Product Passport
+        </button>
+
+        <button class="btn-primary" onclick="window.navArtisan('passport')">
+          ${renderIcon('qr', '', 16)} Show QR Code
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Screen 16 — Edit Your Product
+function renderScreen16_EditProduct(product) {
+  return `
+    <div style="padding: 20px;">
+      <h2 style="font-size: 20px; margin-bottom: 4px;">✏️ Edit Your Product</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Make changes if needed.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">Product Name</label>
+        <input type="text" id="edit_p_name" class="form-input" value="${product.title}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Craft</label>
+        <input type="text" id="edit_p_cat" class="form-input" value="${product.category}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Material</label>
+        <input type="text" id="edit_p_mat" class="form-input" value="${product.materials.join(', ')}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea id="edit_p_desc" class="form-textarea" rows="3">${product.description}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tags</label>
+        <input type="text" id="edit_p_tags" class="form-input" value="${product.tags.join(', ')}">
+      </div>
+
+      <button class="btn-voice" style="margin-bottom: 16px;" onclick="window.openVoiceAssistantProduct()">
+        ${renderIcon('mic', '', 18)} Change by voice | Speak in your language
+      </button>
+
+      <button class="btn-primary" onclick="window.saveProductEdits('${product.id}')">
+        Save Changes ✓
+      </button>
+    </div>
+  `;
+}
+
+// Global Artisan Handlers
+if (!window.openVoiceAssistantProfile) {
+  window.openVoiceAssistantProfile = () => {
+    appState.openVoiceModal();
+  };
+}
+
+if (!window.openVoiceAssistantProduct) {
+  window.openVoiceAssistantProduct = () => {
+    appState.openVoiceModal();
+  };
+}
+
+window.completeProfileSetup = () => {
+  const nameVal = document.getElementById('artisan_name_input')?.value || 'Ramesh Kumar';
+  const craftVal = document.getElementById('artisan_craft_select')?.value || 'Bamboo Craft';
+  const locVal = document.getElementById('artisan_location_input')?.value || 'Assam, India';
+
+  appState.data.artisanAuth.artisanProfile.name = nameVal;
+  appState.data.artisanAuth.artisanProfile.craftCategory = craftVal;
+  appState.data.artisanAuth.artisanProfile.location = locVal;
+  appState.data.artisanAuth.isRegistered = true;
+  appState.setArtisanScreen('welcome');
+};
+
+window.triggerProductImageUpload = () => {
+  appState.setArtisanScreen('ai_analysis');
+};
+
+window.saveDraftAndContinuePricing = (id) => {
+  const title = document.getElementById('edit_draft_title')?.value;
+  const cat = document.getElementById('edit_draft_cat')?.value;
+  const mat = document.getElementById('edit_draft_mat')?.value;
+  const desc = document.getElementById('edit_draft_desc')?.value;
+
+  appState.updateProduct({
+    id,
+    title: title || 'Handcrafted Item',
+    category: cat || 'Bamboo Craft',
+    materials: mat ? mat.split(',').map(s=>s.trim()) : ['Natural Bamboo'],
+    description: desc || 'Handmade item'
+  });
+
+  appState.setArtisanScreen('smart_pricing', { productId: id });
+};
+
+window.viewOpportunity = (category) => {
+  alert(`Sample market opportunity details for: ${category}`);
+};
+
+window.viewArtisanProductDetail = (id) => {
+  appState.setArtisanScreen('product_detail', { productId: id });
+};
+
+window.saveProductEdits = (id) => {
+  const title = document.getElementById('edit_p_name')?.value;
+  const cat = document.getElementById('edit_p_cat')?.value;
+  const mat = document.getElementById('edit_p_mat')?.value;
+  const desc = document.getElementById('edit_p_desc')?.value;
+  const tags = document.getElementById('edit_p_tags')?.value;
+
+  appState.updateProduct({
+    id,
+    title: title || 'Handcrafted Item',
+    category: cat || 'Bamboo Craft',
+    materials: mat ? mat.split(',').map(s=>s.trim()) : ['Natural Bamboo'],
+    description: desc || 'Handmade item',
+    tags: tags ? tags.split(',').map(s=>s.trim()) : ['Handmade']
+  });
+
+  alert("Product changes saved successfully!");
+  appState.setArtisanScreen('product_detail', { productId: id });
+};
