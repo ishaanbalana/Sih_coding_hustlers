@@ -5,7 +5,7 @@ Manages creation, verification linking, and query operations for craft passports
 
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from ..data.demo_data import PASSPORTS, PRODUCTS, ARTISANS, _LOCK
+from ..data.demo_data import PASSPORTS, PRODUCTS, ARTISANS, _LOCK, save_storage
 from .provenance_service import ProvenanceService
 
 class PassportService:
@@ -49,6 +49,7 @@ class PassportService:
                 "verification_url": f"http://localhost:8000/api/verify/{passport_id}"
             }
             PASSPORTS[passport_id] = passport
+        save_storage()
 
         # Record initial provenance events outside the dict lock
         ProvenanceService.record_event(
@@ -100,6 +101,7 @@ class PassportService:
             if not passport:
                 return None
             passport["verification_status"] = new_status
+        save_storage()
         
         ProvenanceService.record_event(
             passport_id=passport_id,

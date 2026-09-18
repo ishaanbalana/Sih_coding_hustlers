@@ -8,7 +8,7 @@ Explicitly documented as prototype ledger records for evaluation honesty.
 import hashlib
 from datetime import datetime
 from typing import List, Dict, Any, Optional
-from ..data.demo_data import PROVENANCE_EVENTS, _LOCK
+from ..data.demo_data import PROVENANCE_EVENTS, _LOCK, save_storage
 
 class ProvenanceService:
     @staticmethod
@@ -46,7 +46,8 @@ class ProvenanceService:
                 "date": now_str
             }
             PROVENANCE_EVENTS[passport_id].append(event)
-            return event
+        save_storage()
+        return event
 
     @staticmethod
     def get_events(passport_id: str) -> List[Dict[str, Any]]:

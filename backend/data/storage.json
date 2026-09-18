@@ -18,7 +18,7 @@
       "verification_status": "VERIFIED",
       "photo_url": "assets/artisan_ramesh.png",
       "created_at": "17 Sep 2026",
-      "productCount": 2,
+      "productCount": 3,
       "passportCount": 2
     },
     "CRF-ART-001285": {
@@ -77,6 +77,70 @@
       ],
       "photo_url": "assets/artisan_ramesh.png",
       "artisan_id": "CRF-ART-000004",
+      "verification_status": "PENDING",
+      "created_at": "19 Sep 2026",
+      "productCount": 0,
+      "passportCount": 0
+    },
+    "CRF-ART-000005": {
+      "name": "Sunita Sharma",
+      "craft": "Phulkari Embroidery",
+      "craft_type": "Geometric Floral Needlework",
+      "location": "Amritsar, Punjab",
+      "state": "Punjab",
+      "bio": "Specializes in traditional silk-thread embroidery on handspun khadi cotton.",
+      "craft_story": null,
+      "years_experience": 12,
+      "languages": [
+        "en",
+        "hi",
+        "pa"
+      ],
+      "photo_url": "assets/artisan_ramesh.png",
+      "artisan_id": "CRF-ART-000005",
+      "verification_status": "PENDING",
+      "created_at": "19 Sep 2026",
+      "productCount": 0,
+      "passportCount": 0
+    },
+    "CRF-ART-157481": {
+      "artisan_id": "CRF-ART-157481",
+      "name": "Master Artisan",
+      "craft_category": "Madhubani Painting",
+      "craft_specialty": "Madhubani Painting",
+      "location": "India",
+      "phone": "",
+      "created_at": "19 Sep 2026",
+      "status": "APPROVED",
+      "verified": true
+    },
+    "CRF-ART-398990": {
+      "artisan_id": "CRF-ART-398990",
+      "name": "Master Artisan",
+      "craft_category": "Pottery",
+      "craft_specialty": "Pottery",
+      "location": "India",
+      "phone": "",
+      "created_at": "19 Sep 2026",
+      "status": "APPROVED",
+      "verified": true
+    },
+    "CRF-ART-000008": {
+      "name": "Sunita Sharma",
+      "craft": "Phulkari Embroidery",
+      "craft_type": "Geometric Floral Needlework",
+      "location": "Amritsar, Punjab",
+      "state": "Punjab",
+      "bio": "Specializes in traditional silk-thread embroidery on handspun khadi cotton.",
+      "craft_story": null,
+      "years_experience": 12,
+      "languages": [
+        "en",
+        "hi",
+        "pa"
+      ],
+      "photo_url": "assets/artisan_ramesh.png",
+      "artisan_id": "CRF-ART-000008",
       "verification_status": "PENDING",
       "created_at": "19 Sep 2026",
       "productCount": 0,
@@ -357,11 +421,670 @@
           "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio"
         }
       ],
-      "status": "PENDING_VERIFICATION",
+      "status": "VERIFIED",
       "product_id": "CRF-CRF-000004",
       "id": null,
       "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026",
+      "review_note": "Verified by Admin (Heritage Craft Board)"
+    },
+    "CRF-CRF-000005": {
+      "artisan_id": "CRF-ART-000005",
+      "artisanId": null,
+      "name": "Handmade Phulkari Dupatta",
+      "title": null,
+      "category": "Phulkari Embroidery",
+      "craft_type": "Pat Silk Embroidery",
+      "description": "Exquisite bridal phulkari scarf crafted with vibrant silken geometric motifs.",
+      "materials": [
+        "Khadi Cotton",
+        "Pat Silk Thread"
+      ],
+      "tags": [
+        "Phulkari",
+        "Embroidery",
+        "Punjab",
+        "Dupatta"
+      ],
+      "production_time": "2 Days",
+      "production_days": 7,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_basket.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 2800.0,
+      "cost_breakdown": {
+        "material_cost": 750.0,
+        "labour_cost": 1200.0,
+        "production_days": 7,
+        "packaging_cost": 100.0,
+        "total_estimated_cost": 2050.0,
+        "materialCost": 750.0,
+        "labourCost": 1200.0,
+        "productionTimeDays": 7,
+        "packagingCost": 100.0,
+        "totalEstimatedCost": 2050.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio; Premium craftsmanship value matches boutique collection tier"
+        },
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio"
+        }
+      ],
+      "status": "VERIFIED",
+      "product_id": "CRF-CRF-000005",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026",
+      "review_note": "Verified by Admin (Heritage Craft Board)"
+    },
+    "CRF-BAM-007941": {
+      "artisan_id": "CRF-ART-001284",
+      "artisanId": null,
+      "name": "Handcrafted Bamboo Basket",
+      "title": null,
+      "category": "Bamboo Craft",
+      "craft_type": "Bamboo Craft",
+      "description": "Authentic handcrafted bamboo product woven with traditional techniques. Lightweight, durable, and eco-friendly.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Bamboo",
+        "Craft"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_basket.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 650.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0,
+        "materialCost": 180.0,
+        "labourCost": 250.0,
+        "productionTimeDays": 2,
+        "packagingCost": 40.0,
+        "totalEstimatedCost": 470.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 96,
+          "match_score": 96,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Direct match with buyer's sourcing interest in Bamboo Craft; High alignment with interior and hospitality project requirements; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 96,
+          "match_score": 96,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Direct match with buyer's sourcing interest in Bamboo Craft; High alignment with interior and hospitality project requirements"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio; High margin resale potential under ₹1,000 retail wholesale threshold"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-BAM-007941",
+      "id": null,
+      "created_at": "19 Sep 2026",
       "updated_at": "19 Sep 2026"
+    },
+    "CRF-BAM-001265": {
+      "artisan_id": "CRF-ART-157481",
+      "artisanId": null,
+      "name": "Handcrafted Bamboo Basket",
+      "title": null,
+      "category": "Madhubani Painting",
+      "craft_type": "Madhubani Painting",
+      "description": "Authentic handcrafted bamboo product woven with traditional techniques. Lightweight, durable, and eco-friendly.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Bamboo",
+        "Craft"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "productionTimeDays": null,
+      "image": "assets/madhubani_art.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 650.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0,
+        "materialCost": 180.0,
+        "labourCost": 250.0,
+        "productionTimeDays": 2,
+        "packagingCost": 40.0,
+        "totalEstimatedCost": 470.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 90,
+          "match_score": 90,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Direct match with buyer's sourcing interest in Handmade Paper; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-BAM-001265",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "CRF-BAM-006506": {
+      "artisan_id": "CRF-ART-157481",
+      "artisanId": null,
+      "name": "Handcrafted Bamboo Basket",
+      "title": null,
+      "category": "Madhubani Painting",
+      "craft_type": "Madhubani Painting",
+      "description": "Authentic handcrafted bamboo product woven with traditional techniques. Lightweight, durable, and eco-friendly.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Bamboo",
+        "Craft"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_lamp.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 650.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0,
+        "materialCost": 180.0,
+        "labourCost": 250.0,
+        "productionTimeDays": 2,
+        "packagingCost": 40.0,
+        "totalEstimatedCost": 470.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 90,
+          "match_score": 90,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Direct match with buyer's sourcing interest in Handmade Paper; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-BAM-006506",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "CRF-BAM-009456": {
+      "artisan_id": "CRF-ART-398990",
+      "artisanId": null,
+      "name": "Handcrafted Bamboo Basket",
+      "title": null,
+      "category": "Pottery",
+      "craft_type": "Pottery",
+      "description": "Authentic handcrafted bamboo product woven with traditional techniques. Lightweight, durable, and eco-friendly.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Bamboo",
+        "Craft"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_basket.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 650.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0,
+        "materialCost": 180.0,
+        "labourCost": 250.0,
+        "productionTimeDays": 2,
+        "packagingCost": 40.0,
+        "totalEstimatedCost": 470.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 86,
+          "match_score": 86,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio; High alignment with interior and hospitality project requirements; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 80,
+          "match_score": 80,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio; High alignment with interior and hospitality project requirements"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio; High margin resale potential under ₹1,000 retail wholesale threshold"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-BAM-009456",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "CRF-BAM-007756": {
+      "artisan_id": "CRF-ART-398990",
+      "artisanId": null,
+      "name": "Handcrafted Bamboo Basket",
+      "title": null,
+      "category": "Pottery",
+      "craft_type": "Pottery",
+      "description": "Authentic handcrafted bamboo product woven with traditional techniques. Lightweight, durable, and eco-friendly.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Bamboo",
+        "Craft"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_basket.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 650.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0,
+        "materialCost": 180.0,
+        "labourCost": 250.0,
+        "productionTimeDays": 2,
+        "packagingCost": 40.0,
+        "totalEstimatedCost": 470.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 86,
+          "match_score": 86,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio; High alignment with interior and hospitality project requirements; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 80,
+          "match_score": 80,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio; High alignment with interior and hospitality project requirements"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio; High margin resale potential under ₹1,000 retail wholesale threshold"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-BAM-007756",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "CRF-BAM-004421": {
+      "artisan_id": "CRF-ART-398990",
+      "artisanId": null,
+      "name": "Handcrafted Bamboo Basket",
+      "title": null,
+      "category": "Pottery",
+      "craft_type": "Pottery",
+      "description": "Authentic handcrafted bamboo product woven with traditional techniques. Lightweight, durable, and eco-friendly.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Bamboo",
+        "Craft"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_lamp.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 650.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0,
+        "materialCost": 180.0,
+        "labourCost": 250.0,
+        "productionTimeDays": 2,
+        "packagingCost": 40.0,
+        "totalEstimatedCost": 470.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 86,
+          "match_score": 86,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio; High alignment with interior and hospitality project requirements; High margin resale potential under ₹1,000 retail wholesale threshold"
+        },
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 80,
+          "match_score": 80,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio; High alignment with interior and hospitality project requirements"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio; High margin resale potential under ₹1,000 retail wholesale threshold"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-BAM-004421",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "CRF-CRF-000012": {
+      "artisan_id": "CRF-ART-000008",
+      "artisanId": null,
+      "name": "Handmade Phulkari Dupatta",
+      "title": null,
+      "category": "Phulkari Embroidery",
+      "craft_type": "Pat Silk Embroidery",
+      "description": "Exquisite bridal phulkari scarf crafted with vibrant silken geometric motifs.",
+      "materials": [
+        "Khadi Cotton",
+        "Pat Silk Thread"
+      ],
+      "tags": [
+        "Phulkari",
+        "Embroidery",
+        "Punjab",
+        "Dupatta"
+      ],
+      "production_time": "2 Days",
+      "production_days": 7,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_basket.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 2800.0,
+      "cost_breakdown": {
+        "material_cost": 750.0,
+        "labour_cost": 1200.0,
+        "production_days": 7,
+        "packaging_cost": 100.0,
+        "total_estimated_cost": 2050.0,
+        "materialCost": 750.0,
+        "labourCost": 1200.0,
+        "productionTimeDays": 7,
+        "packagingCost": 100.0,
+        "totalEstimatedCost": 2050.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio; Premium craftsmanship value matches boutique collection tier"
+        },
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio"
+        }
+      ],
+      "status": "VERIFIED",
+      "product_id": "CRF-CRF-000012",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026",
+      "review_note": "Verified by Admin (Heritage Craft Board)"
     }
   },
   "INQUIRIES": {
@@ -378,6 +1101,51 @@
       "updated_at": "18 Sep 2026",
       "buyer_name": "Arjun Sharma",
       "artisan_name": "Ramesh Kumar"
+    },
+    "REQ-002": {
+      "buyer_id": "BUY-001",
+      "artisan_id": "CRF-ART-000004",
+      "product_id": "CRF-CRF-000004",
+      "type": "CUSTOM_ORDER",
+      "message": "We would like to order 10 custom Phulkari dupattas in maroon and gold.",
+      "quantity": 10,
+      "inquiry_id": "REQ-002",
+      "buyer_name": "Arjun Sharma",
+      "product_title": "Handmade Phulkari Dupatta",
+      "artisan_name": "Sunita Sharma",
+      "status": "ACCEPTED",
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "REQ-003": {
+      "buyer_id": "BUY-001",
+      "artisan_id": "CRF-ART-000005",
+      "product_id": "CRF-CRF-000005",
+      "type": "CUSTOM_ORDER",
+      "message": "We would like to order 10 custom Phulkari dupattas in maroon and gold.",
+      "quantity": 10,
+      "inquiry_id": "REQ-003",
+      "buyer_name": "Arjun Sharma",
+      "product_title": "Handmade Phulkari Dupatta",
+      "artisan_name": "Sunita Sharma",
+      "status": "ACCEPTED",
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    },
+    "REQ-004": {
+      "buyer_id": "BUY-001",
+      "artisan_id": "CRF-ART-000008",
+      "product_id": "CRF-CRF-000012",
+      "type": "CUSTOM_ORDER",
+      "message": "We would like to order 10 custom Phulkari dupattas in maroon and gold.",
+      "quantity": 10,
+      "inquiry_id": "REQ-004",
+      "buyer_name": "Arjun Sharma",
+      "product_title": "Handmade Phulkari Dupatta",
+      "artisan_name": "Sunita Sharma",
+      "status": "ACCEPTED",
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
     }
   },
   "PASSPORTS": {
@@ -429,8 +1197,144 @@
       ],
       "production_time": "2 Days",
       "registration_date": "19 Sep 2026",
-      "verification_status": "PENDING",
+      "verification_status": "VERIFIED",
       "verification_url": "http://localhost:8000/api/verify/CRF-PAS-000004"
+    },
+    "CRF-PAS-000005": {
+      "passport_id": "CRF-PAS-000005",
+      "product_id": "CRF-CRF-000005",
+      "artisan_id": "CRF-ART-000005",
+      "product_name": "Handmade Phulkari Dupatta",
+      "craft": "Phulkari Embroidery",
+      "craft_type": "Pat Silk Embroidery",
+      "origin": "Amritsar, Punjab",
+      "materials": [
+        "Khadi Cotton",
+        "Pat Silk Thread"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "VERIFIED",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-000005"
+    },
+    "CRF-PAS-BAM-007941": {
+      "passport_id": "CRF-PAS-BAM-007941",
+      "product_id": "CRF-BAM-007941",
+      "artisan_id": "CRF-ART-001284",
+      "product_name": "Handcrafted Bamboo Basket",
+      "craft": "Bamboo Craft",
+      "craft_type": "Bamboo Craft",
+      "origin": "Nalbari, Assam",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-BAM-007941"
+    },
+    "CRF-PAS-BAM-001265": {
+      "passport_id": "CRF-PAS-BAM-001265",
+      "product_id": "CRF-BAM-001265",
+      "artisan_id": "CRF-ART-157481",
+      "product_name": "Handcrafted Bamboo Basket",
+      "craft": "Madhubani Painting",
+      "craft_type": "Madhubani Painting",
+      "origin": "India",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-BAM-001265"
+    },
+    "CRF-PAS-BAM-006506": {
+      "passport_id": "CRF-PAS-BAM-006506",
+      "product_id": "CRF-BAM-006506",
+      "artisan_id": "CRF-ART-157481",
+      "product_name": "Handcrafted Bamboo Basket",
+      "craft": "Madhubani Painting",
+      "craft_type": "Madhubani Painting",
+      "origin": "India",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-BAM-006506"
+    },
+    "CRF-PAS-BAM-009456": {
+      "passport_id": "CRF-PAS-BAM-009456",
+      "product_id": "CRF-BAM-009456",
+      "artisan_id": "CRF-ART-398990",
+      "product_name": "Handcrafted Bamboo Basket",
+      "craft": "Pottery",
+      "craft_type": "Pottery",
+      "origin": "India",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-BAM-009456"
+    },
+    "CRF-PAS-BAM-007756": {
+      "passport_id": "CRF-PAS-BAM-007756",
+      "product_id": "CRF-BAM-007756",
+      "artisan_id": "CRF-ART-398990",
+      "product_name": "Handcrafted Bamboo Basket",
+      "craft": "Pottery",
+      "craft_type": "Pottery",
+      "origin": "India",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-BAM-007756"
+    },
+    "CRF-PAS-BAM-004421": {
+      "passport_id": "CRF-PAS-BAM-004421",
+      "product_id": "CRF-BAM-004421",
+      "artisan_id": "CRF-ART-398990",
+      "product_name": "Handcrafted Bamboo Basket",
+      "craft": "Pottery",
+      "craft_type": "Pottery",
+      "origin": "India",
+      "materials": [
+        "Natural Bamboo",
+        "Cane"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-BAM-004421"
+    },
+    "CRF-PAS-000012": {
+      "passport_id": "CRF-PAS-000012",
+      "product_id": "CRF-CRF-000012",
+      "artisan_id": "CRF-ART-000008",
+      "product_name": "Handmade Phulkari Dupatta",
+      "craft": "Phulkari Embroidery",
+      "craft_type": "Pat Silk Embroidery",
+      "origin": "Amritsar, Punjab",
+      "materials": [
+        "Khadi Cotton",
+        "Pat Silk Thread"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "VERIFIED",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-000012"
     }
   },
   "PROVENANCE_EVENTS": {
@@ -505,6 +1409,264 @@
         "status": "Completed",
         "title": "Artisan Linked",
         "date": "19 Sep 2026 02:14 IST"
+      },
+      {
+        "event_id": "EVT-000004-003",
+        "passport_id": "CRF-PAS-000004",
+        "event_type": "QUALITY_INSPECTED",
+        "description": "Weave tightness and natural dye fastness verified by Master Artisan Guild",
+        "timestamp": "19 Sep 2026 02:14 IST",
+        "record_hash": "0x129b5a30ec07c528e3bb113f6f911c441bec947076f3f7de9c067361f05a5bd6",
+        "status": "Completed",
+        "title": "Quality Inspected",
+        "date": "19 Sep 2026 02:14 IST"
+      },
+      {
+        "event_id": "EVT-000004-004",
+        "passport_id": "CRF-PAS-000004",
+        "event_type": "STATUS_UPDATED",
+        "description": "Status updated to VERIFIED. Verified by Admin (Heritage Craft Board)",
+        "timestamp": "19 Sep 2026 02:14 IST",
+        "record_hash": "0xb5cab9fad7ef57855ccc04bbb7a75964941da81606394ed97087ff14f42af67d",
+        "status": "Completed",
+        "title": "Status Updated",
+        "date": "19 Sep 2026 02:14 IST"
+      }
+    ],
+    "CRF-PAS-000005": [
+      {
+        "event_id": "EVT-000005-001",
+        "passport_id": "CRF-PAS-000005",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handmade Phulkari Dupatta by Sunita Sharma",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x573eb30429fc27869c37bb49635c92d53d866af4c920375207aeecd34b5522a3",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-000005-002",
+        "passport_id": "CRF-PAS-000005",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at Amritsar, Punjab",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x1ef7b41ef03de0d2dc8aa37e3d07cc678aeaf592f7d618ad42b3b4a79a808bdd",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-000005-003",
+        "passport_id": "CRF-PAS-000005",
+        "event_type": "QUALITY_INSPECTED",
+        "description": "Weave tightness and natural dye fastness verified by Master Artisan Guild",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x56d1e3de0452919b4d3a2b7c653edaea6237e33f0c49d44b644a7a08992b0b54",
+        "status": "Completed",
+        "title": "Quality Inspected",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-000005-004",
+        "passport_id": "CRF-PAS-000005",
+        "event_type": "STATUS_UPDATED",
+        "description": "Status updated to VERIFIED. Verified by Admin (Heritage Craft Board)",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0xb5944e2d307142fd31795728ea4454c8c256502a2773bccd91b3f905f905758c",
+        "status": "Completed",
+        "title": "Status Updated",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-BAM-007941": [
+      {
+        "event_id": "EVT-007941-001",
+        "passport_id": "CRF-PAS-BAM-007941",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handcrafted Bamboo Basket by Ramesh Kumar",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x728f7a636579c5374e2f3935b4ede1fefbcb96fe6cda3cf4f6fadc3ab0e53bab",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-007941-002",
+        "passport_id": "CRF-PAS-BAM-007941",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at Nalbari, Assam",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x50d0dcb87070aa829d829988e2201043c55580c589d9eadd176df3ab202eb377",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-BAM-001265": [
+      {
+        "event_id": "EVT-001265-001",
+        "passport_id": "CRF-PAS-BAM-001265",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handcrafted Bamboo Basket by Master Artisan",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x304801b2802126b050b23e852772c080ccf0cf5ececb75fd6979cf84d3d146c0",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-001265-002",
+        "passport_id": "CRF-PAS-BAM-001265",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at India",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0xa33a40d6d374dea3bab8fb06da75a18a9a16887d2dbe966ee77609fc011d7945",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-BAM-006506": [
+      {
+        "event_id": "EVT-006506-001",
+        "passport_id": "CRF-PAS-BAM-006506",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handcrafted Bamboo Basket by Master Artisan",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x2609c63de81fc3283cb0c3b4a9b47a09d5ea85f5c7969f2d5409f1a08a8fe54d",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-006506-002",
+        "passport_id": "CRF-PAS-BAM-006506",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at India",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x31781d8ef41515e7629ebe1fb1d24b09f2f00d4b76de7e95481af9b02442a029",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-BAM-004421": [
+      {
+        "event_id": "EVT-004421-001",
+        "passport_id": "CRF-PAS-BAM-004421",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handcrafted Bamboo Basket by Master Artisan",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x587697feeca1fb10ef53c2d464eb73339ef116330b7459308f48ef48ea68ff0a",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-004421-002",
+        "passport_id": "CRF-PAS-BAM-004421",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at India",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x9a5378f54478ec713ecf31f10f07fafe7f227b5a048f128fdd1324308214fbdf",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-BAM-007756": [
+      {
+        "event_id": "EVT-007756-001",
+        "passport_id": "CRF-PAS-BAM-007756",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handcrafted Bamboo Basket by Master Artisan",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x8babfaf96a8ada86512339e83f11204a1c1a8084b79d48dd26c4d38554496528",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-007756-002",
+        "passport_id": "CRF-PAS-BAM-007756",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at India",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x4a99b068cd49b867e402c8f3ff4c499de5645260fc72de8ea8af5b7d13d1194d",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-BAM-009456": [
+      {
+        "event_id": "EVT-009456-001",
+        "passport_id": "CRF-PAS-BAM-009456",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handcrafted Bamboo Basket by Master Artisan",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x944a95aa726dce6ab84957234ce724e09fea9e456b1cbe2ef4d3a3ecf6d4f343",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:19 IST"
+      },
+      {
+        "event_id": "EVT-009456-002",
+        "passport_id": "CRF-PAS-BAM-009456",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at India",
+        "timestamp": "19 Sep 2026 02:19 IST",
+        "record_hash": "0x22a5b17cbc73b5c7cfe49008a4f43c250bbda407e0e3b76721c9ce2ef33020b9",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:19 IST"
+      }
+    ],
+    "CRF-PAS-000012": [
+      {
+        "event_id": "EVT-000012-001",
+        "passport_id": "CRF-PAS-000012",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handmade Phulkari Dupatta by Sunita Sharma",
+        "timestamp": "19 Sep 2026 02:25 IST",
+        "record_hash": "0x872daec5ae536dcab0c1db8a3f1d72e99ed5397c88784e9559475b02eb3bf220",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:25 IST"
+      },
+      {
+        "event_id": "EVT-000012-002",
+        "passport_id": "CRF-PAS-000012",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at Amritsar, Punjab",
+        "timestamp": "19 Sep 2026 02:25 IST",
+        "record_hash": "0xe5b076a49fe934bcb23181fd706d5620c538b0449c1c09ed0581de6b2897310c",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:25 IST"
+      },
+      {
+        "event_id": "EVT-000012-003",
+        "passport_id": "CRF-PAS-000012",
+        "event_type": "QUALITY_INSPECTED",
+        "description": "Weave tightness and natural dye fastness verified by Master Artisan Guild",
+        "timestamp": "19 Sep 2026 02:25 IST",
+        "record_hash": "0x276566a6be6aacf509314635e44138d253ca958cb17165e7138af107a053f11b",
+        "status": "Completed",
+        "title": "Quality Inspected",
+        "date": "19 Sep 2026 02:25 IST"
+      },
+      {
+        "event_id": "EVT-000012-004",
+        "passport_id": "CRF-PAS-000012",
+        "event_type": "STATUS_UPDATED",
+        "description": "Status updated to VERIFIED. Verified by Admin (Heritage Craft Board)",
+        "timestamp": "19 Sep 2026 02:25 IST",
+        "record_hash": "0x45cdda86ed8260b7004f374e4b711fed9ae68d68000c83be9ce63b2cf214f093",
+        "status": "Completed",
+        "title": "Status Updated",
+        "date": "19 Sep 2026 02:25 IST"
       }
     ]
   }

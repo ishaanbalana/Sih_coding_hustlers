@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status
 from ..models.inquiry import InquiryCreate, InquiryUpdate, InquiryResponse
 from ..models.common import InquiryStatus
-from ..data.demo_data import INQUIRIES, BUYERS, ARTISANS, PRODUCTS, _LOCK
+from ..data.demo_data import INQUIRIES, BUYERS, ARTISANS, PRODUCTS, _LOCK, save_storage
 
 router = APIRouter(prefix="/api/inquiries", tags=["Buyer Inquiries & Direct Connect"])
 
@@ -62,6 +62,8 @@ def create_inquiry(inq_in: InquiryCreate):
         inq_dict["product_title"] = inq_in.product_title or PRODUCTS[inq_in.product_id].get("name")
 
         INQUIRIES[inquiry_id] = inq_dict
+    save_storage()
+    with _LOCK:
         return _hydrate_inquiry(inq_dict)
 
 @router.get("", response_model=List[InquiryResponse], summary="List Inquiries")
@@ -109,4 +111,6 @@ def update_inquiry(inquiry_id: str, inq_update: InquiryUpdate):
                     inq[key] = val
 
         inq["updated_at"] = datetime.now().strftime("%d %b %Y")
+    save_storage()
+    with _LOCK:
         return _hydrate_inquiry(inq)

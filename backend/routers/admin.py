@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from ..models.artisan import ArtisanResponse
 from ..models.product import ProductResponse
 from ..models.passport import ProvenanceEvent
-from ..data.demo_data import ARTISANS, PRODUCTS, INQUIRIES, PASSPORTS, PROVENANCE_EVENTS, _LOCK
+from ..data.demo_data import ARTISANS, PRODUCTS, INQUIRIES, PASSPORTS, PROVENANCE_EVENTS, _LOCK, save_storage
 from ..services.passport_service import PassportService
 from ..services.provenance_service import ProvenanceService
 
@@ -63,6 +63,8 @@ def approve_artisan(artisan_id: str, req: Optional[ReviewActionRequest] = None):
         if not a:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Artisan '{artisan_id}' not found.")
         a["verification_status"] = "VERIFIED"
+    save_storage()
+    with _LOCK:
         return ArtisanResponse(**a)
 
 @router.post("/artisans/{artisan_id}/request-changes", response_model=ArtisanResponse, summary="Request Artisan Profile Changes")
@@ -73,6 +75,8 @@ def request_artisan_changes(artisan_id: str, req: RequestChangesRequest):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Artisan '{artisan_id}' not found.")
         a["verification_status"] = "CHANGES_REQUESTED"
         a["review_note"] = req.review_note
+    save_storage()
+    with _LOCK:
         return ArtisanResponse(**a)
 
 @router.get("/products/pending", response_model=List[ProductResponse], summary="Queue of Products Awaiting Verification")
@@ -119,6 +123,7 @@ def approve_product(product_id: str, req: Optional[ReviewActionRequest] = None):
             verification_status="VERIFIED"
         )
 
+    save_storage()
     with _LOCK:
         return _hydrate_product_response(PRODUCTS[product_id])
 
@@ -141,6 +146,7 @@ def request_product_changes(product_id: str, req: RequestChangesRequest):
             note=req.review_note
         )
 
+    save_storage()
     with _LOCK:
         return _hydrate_product_response(PRODUCTS[product_id])
 
