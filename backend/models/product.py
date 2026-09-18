@@ -121,8 +121,45 @@ class ProductBase(BaseModel):
     buyer_matches: List[BuyerMatch] = Field(default_factory=list)
     status: ProductStatus = ProductStatus.PENDING_VERIFICATION
 
-class ProductCreate(ProductBase):
+class ProductCreate(BaseModel):
+    artisan_id: Optional[str] = None
+    artisanId: Optional[str] = None
+    name: Optional[str] = None
+    title: Optional[str] = None
+    category: Optional[str] = "Handicrafts"
+    craft_type: Optional[str] = None
+    description: str = ""
+    materials: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
+    production_time: Optional[str] = "2 Days"
+    production_days: int = Field(1, ge=1)
+    productionTimeDays: Optional[int] = None
+    image: Optional[str] = "assets/bamboo_basket.png"
+    imageUrl: Optional[str] = None
+    enhanced_image: Optional[str] = None
+    price: float = Field(0.0, ge=0.0)
+    cost_breakdown: Optional[CostBreakdown] = None
+    ai_insight: Optional[AIInsight] = None
+    buyer_matches: List[BuyerMatch] = Field(default_factory=list)
+    status: ProductStatus = ProductStatus.PENDING_VERIFICATION
     product_id: Optional[str] = None
+    id: Optional[str] = None
+
+    def model_post_init(self, __context):
+        if not self.artisan_id and self.artisanId:
+            self.artisan_id = self.artisanId
+        elif not self.artisan_id:
+            self.artisan_id = "CRF-ART-001284"
+        if not self.name and self.title:
+            self.name = self.title
+        elif not self.name:
+            self.name = "Handcrafted Artisan Item"
+        if not self.product_id and self.id:
+            self.product_id = self.id
+        if not self.image and self.imageUrl:
+            self.image = self.imageUrl
+        if self.productionTimeDays is not None:
+            self.production_days = self.productionTimeDays
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None

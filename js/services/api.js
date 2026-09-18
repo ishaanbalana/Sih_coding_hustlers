@@ -78,6 +78,18 @@ class ApiService {
     }
   }
 
+  async deleteProduct(productId) {
+    try {
+      const res = await fetch(`${this.baseUrl}/products/${productId}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete product');
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  }
+
   // ── Artisans ─────────────────────────────────────────────────────────
   async getArtisans() {
     try {

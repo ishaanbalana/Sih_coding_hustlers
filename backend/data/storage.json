@@ -1,0 +1,511 @@
+{
+  "ARTISANS": {
+    "CRF-ART-001284": {
+      "artisan_id": "CRF-ART-001284",
+      "name": "Ramesh Kumar",
+      "craft": "Bamboo Craft",
+      "craft_type": "Handwoven Cane & Bamboo Lattice",
+      "location": "Nalbari, Assam",
+      "state": "Assam",
+      "bio": "Ramesh is a traditional bamboo artisan from Assam. His craft reflects local weaving techniques passed through generations.",
+      "craft_story": "Sourcing natural golden bamboo from local groves, cured using traditional smoke and water treatment for lifelong durability.",
+      "years_experience": 18,
+      "languages": [
+        "en",
+        "hi",
+        "as"
+      ],
+      "verification_status": "VERIFIED",
+      "photo_url": "assets/artisan_ramesh.png",
+      "created_at": "17 Sep 2026",
+      "productCount": 2,
+      "passportCount": 2
+    },
+    "CRF-ART-001285": {
+      "artisan_id": "CRF-ART-001285",
+      "name": "Sita Devi",
+      "craft": "Madhubani Painting",
+      "craft_type": "Mithila Folk Painting on Handmade Paper",
+      "location": "Madhubani, Bihar",
+      "state": "Bihar",
+      "bio": "Sita Devi practices authentic Mithila and Madhubani painting techniques using natural dyes and handmade paper.",
+      "craft_story": "Creating geometric and floral folk art using bamboo twigs, soot, turmeric, and marigold flower extracts.",
+      "years_experience": 22,
+      "languages": [
+        "en",
+        "hi"
+      ],
+      "verification_status": "VERIFIED",
+      "photo_url": "assets/madhubani_art.png",
+      "created_at": "15 Sep 2026",
+      "productCount": 1,
+      "passportCount": 1
+    },
+    "CRF-ART-001286": {
+      "artisan_id": "CRF-ART-001286",
+      "name": "Manoj Prajapati",
+      "craft": "Blue Pottery",
+      "craft_type": "Glazed Quartz Ceramic Artwork",
+      "location": "Kot Jewar, Jaipur",
+      "state": "Rajasthan",
+      "bio": "Fourth-generation master potter preserving the Persian-origin Turko-Jaipur blue glazed technique without using traditional clay.",
+      "craft_story": "Formulated from powdered quartz, Fuller's earth, gum, and copper oxide blue glaze.",
+      "years_experience": 14,
+      "languages": [
+        "en",
+        "hi"
+      ],
+      "verification_status": "PENDING",
+      "photo_url": "assets/artisan_ramesh.png",
+      "created_at": "18 Sep 2026",
+      "productCount": 1,
+      "passportCount": 0
+    },
+    "CRF-ART-000004": {
+      "name": "Sunita Sharma",
+      "craft": "Phulkari Embroidery",
+      "craft_type": "Geometric Floral Needlework",
+      "location": "Amritsar, Punjab",
+      "state": "Punjab",
+      "bio": "Specializes in traditional silk-thread embroidery on handspun khadi cotton.",
+      "craft_story": null,
+      "years_experience": 12,
+      "languages": [
+        "en",
+        "hi",
+        "pa"
+      ],
+      "photo_url": "assets/artisan_ramesh.png",
+      "artisan_id": "CRF-ART-000004",
+      "verification_status": "PENDING",
+      "created_at": "19 Sep 2026",
+      "productCount": 0,
+      "passportCount": 0
+    }
+  },
+  "PRODUCTS": {
+    "CRF-BAM-001284": {
+      "product_id": "CRF-BAM-001284",
+      "artisan_id": "CRF-ART-001284",
+      "name": "Bamboo Handwoven Basket",
+      "category": "Bamboo Craft",
+      "craft_type": "Assamese Traditional Split Bamboo Weaving",
+      "description": "Handcrafted bamboo basket made using traditional Assamese weaving techniques. Durable, eco-friendly, and lightweight.",
+      "materials": [
+        "Natural Bamboo",
+        "Cane Binding"
+      ],
+      "tags": [
+        "Handmade",
+        "Eco-friendly",
+        "Traditional",
+        "Bamboo",
+        "Storage"
+      ],
+      "production_time": "2 Days",
+      "production_days": 2,
+      "image": "assets/bamboo_basket.png",
+      "enhanced_image": "assets/bamboo_basket.png",
+      "price": 680.0,
+      "cost_breakdown": {
+        "material_cost": 180.0,
+        "labour_cost": 250.0,
+        "production_days": 2,
+        "packaging_cost": 40.0,
+        "total_estimated_cost": 470.0
+      },
+      "ai_insight": {
+        "market_demand": "High",
+        "similar_price_range": {
+          "min": 550.0,
+          "max": 750.0
+        },
+        "indicative_price_range": {
+          "min": 650.0,
+          "max": 700.0
+        },
+        "suggested_price": 680.0,
+        "confidence_score": 0.94,
+        "label": "AI Indicative Price Recommendation"
+      },
+      "buyer_matches": [
+        {
+          "id": "M1",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Handicraft Retailer",
+          "match_percentage": 94,
+          "looking_for": "Bamboo crafts",
+          "requirement": "Seeking eco-friendly home storage inventory",
+          "reason": "Matches retailer craft preference (Bamboo) and price range"
+        },
+        {
+          "id": "M2",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Hospitality & Decor Buyer",
+          "match_percentage": 88,
+          "looking_for": "Handmade decor",
+          "requirement": "Resort lobby & dining table accent pieces",
+          "reason": "Natural organic bamboo aligns with eco-resort interior spec"
+        }
+      ],
+      "status": "VERIFIED",
+      "created_at": "17 Sep 2026",
+      "updated_at": "17 Sep 2026",
+      "review_note": "Verified by Admin (Govt Handicraft Board Sample Review)"
+    },
+    "CRF-MAD-001285": {
+      "product_id": "CRF-MAD-001285",
+      "artisan_id": "CRF-ART-001285",
+      "name": "Madhubani Artwork",
+      "category": "Madhubani Painting",
+      "craft_type": "Mithila Folk Motifs",
+      "description": "Intricate traditional Madhubani painting depicting nature and cultural folk motifs on handmade paper.",
+      "materials": [
+        "Handmade Paper",
+        "Natural Dyes",
+        "Charcoal Soot"
+      ],
+      "tags": [
+        "Folk Art",
+        "Handmade Paper",
+        "Natural Dyes",
+        "Bihar Heritage"
+      ],
+      "production_time": "5 Days",
+      "production_days": 5,
+      "image": "assets/madhubani_art.png",
+      "enhanced_image": "assets/madhubani_art.png",
+      "price": 1200.0,
+      "cost_breakdown": {
+        "material_cost": 350.0,
+        "labour_cost": 600.0,
+        "production_days": 5,
+        "packaging_cost": 50.0,
+        "total_estimated_cost": 1000.0
+      },
+      "ai_insight": {
+        "market_demand": "High",
+        "similar_price_range": {
+          "min": 1000.0,
+          "max": 1500.0
+        },
+        "indicative_price_range": {
+          "min": 1150.0,
+          "max": 1300.0
+        },
+        "suggested_price": 1200.0,
+        "confidence_score": 0.96,
+        "label": "AI Indicative Price Recommendation"
+      },
+      "buyer_matches": [
+        {
+          "id": "M3",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Art Gallery & Decor",
+          "match_percentage": 96,
+          "looking_for": "Heritage Folk Art",
+          "requirement": "Corporate gift collection and exhibition pieces",
+          "reason": "High demand for authentic certified Mithila paintings"
+        }
+      ],
+      "status": "VERIFIED",
+      "created_at": "15 Sep 2026",
+      "updated_at": "15 Sep 2026",
+      "review_note": "Approved with digital passport generation"
+    },
+    "CRF-BAM-001286": {
+      "product_id": "CRF-BAM-001286",
+      "artisan_id": "CRF-ART-001284",
+      "name": "Bamboo Woven Table Lamp",
+      "category": "Bamboo Craft",
+      "craft_type": "Ambient Geometric Lattice",
+      "description": "Handcrafted bamboo ambient table lamp projecting geometric shadow patterns.",
+      "materials": [
+        "Natural Bamboo",
+        "Woven Mesh",
+        "Brass Fitting"
+      ],
+      "tags": [
+        "Lighting",
+        "Bamboo",
+        "Eco-friendly",
+        "Home Decor"
+      ],
+      "production_time": "3 Days",
+      "production_days": 3,
+      "image": "assets/bamboo_lamp.png",
+      "enhanced_image": "assets/bamboo_lamp.png",
+      "price": 950.0,
+      "cost_breakdown": {
+        "material_cost": 280.0,
+        "labour_cost": 400.0,
+        "production_days": 3,
+        "packaging_cost": 60.0,
+        "total_estimated_cost": 740.0
+      },
+      "ai_insight": {
+        "market_demand": "High",
+        "similar_price_range": {
+          "min": 850.0,
+          "max": 1200.0
+        },
+        "indicative_price_range": {
+          "min": 900.0,
+          "max": 1000.0
+        },
+        "suggested_price": 950.0,
+        "confidence_score": 0.93,
+        "label": "AI Indicative Price Recommendation"
+      },
+      "buyer_matches": [
+        {
+          "id": "M4",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Boutique Home Decor",
+          "match_percentage": 91,
+          "looking_for": "Ambient Bamboo Lamps",
+          "requirement": "Modern eco-lighting fixtures for hospitality",
+          "reason": "Matches lighting category and handmade criteria"
+        }
+      ],
+      "status": "VERIFIED",
+      "created_at": "18 Sep 2026",
+      "updated_at": "18 Sep 2026",
+      "review_note": "Verified"
+    },
+    "CRF-CRF-000004": {
+      "artisan_id": "CRF-ART-000004",
+      "artisanId": null,
+      "name": "Handmade Phulkari Dupatta",
+      "title": null,
+      "category": "Phulkari Embroidery",
+      "craft_type": "Pat Silk Embroidery",
+      "description": "Exquisite bridal phulkari scarf crafted with vibrant silken geometric motifs.",
+      "materials": [
+        "Khadi Cotton",
+        "Pat Silk Thread"
+      ],
+      "tags": [
+        "Phulkari",
+        "Embroidery",
+        "Punjab",
+        "Dupatta"
+      ],
+      "production_time": "2 Days",
+      "production_days": 7,
+      "productionTimeDays": null,
+      "image": "assets/bamboo_basket.png",
+      "imageUrl": null,
+      "enhanced_image": null,
+      "price": 2800.0,
+      "cost_breakdown": {
+        "material_cost": 750.0,
+        "labour_cost": 1200.0,
+        "production_days": 7,
+        "packaging_cost": 100.0,
+        "total_estimated_cost": 2050.0,
+        "materialCost": 750.0,
+        "labourCost": 1200.0,
+        "productionTimeDays": 7,
+        "packagingCost": 100.0,
+        "totalEstimatedCost": 2050.0
+      },
+      "ai_insight": null,
+      "buyer_matches": [
+        {
+          "id": "MATCH-BUY-002",
+          "buyer_id": "BUY-002",
+          "buyer_name": "Priya Nair",
+          "buyer_type": "Interior Designer",
+          "buyer_category": "Interior Designer",
+          "match_percentage": 74,
+          "match_score": 74,
+          "looking_for": "Bamboo Craft, Traditional Lighting, Terracotta",
+          "requirement": "Eco-resort lobby and boutique restaurant projects",
+          "reason": "Compatible with Interior Designer craft sourcing portfolio; Premium craftsmanship value matches boutique collection tier"
+        },
+        {
+          "id": "MATCH-BUY-001",
+          "buyer_id": "BUY-001",
+          "buyer_name": "Arjun Sharma",
+          "buyer_type": "Retail Store",
+          "buyer_category": "Retail Store",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Bamboo Craft, Home Storage, Sustainable Decor",
+          "requirement": "Curated lifestyle boutique retail inventory",
+          "reason": "Compatible with Retail Store craft sourcing portfolio"
+        },
+        {
+          "id": "MATCH-BUY-003",
+          "buyer_id": "BUY-003",
+          "buyer_name": "Rajesh Gupta",
+          "buyer_type": "Corporate Gifting Company",
+          "buyer_category": "Corporate Gifting Company",
+          "match_percentage": 68,
+          "match_score": 68,
+          "looking_for": "Handmade Paper, Madhubani Painting, Eco Gifts",
+          "requirement": "Executive Diwali and corporate sustainable hamper collections",
+          "reason": "Compatible with Corporate Gifting Company craft sourcing portfolio"
+        }
+      ],
+      "status": "PENDING_VERIFICATION",
+      "product_id": "CRF-CRF-000004",
+      "id": null,
+      "created_at": "19 Sep 2026",
+      "updated_at": "19 Sep 2026"
+    }
+  },
+  "INQUIRIES": {
+    "REQ-001": {
+      "inquiry_id": "REQ-001",
+      "buyer_id": "BUY-001",
+      "artisan_id": "CRF-ART-001284",
+      "product_id": "CRF-BAM-001284",
+      "type": "BULK_WHOLESALE",
+      "message": "Interested in carrying 50 units for our craft boutique chain in Delhi and Gurgaon.",
+      "quantity": 50,
+      "status": "PENDING",
+      "created_at": "18 Sep 2026",
+      "updated_at": "18 Sep 2026",
+      "buyer_name": "Arjun Sharma",
+      "artisan_name": "Ramesh Kumar"
+    }
+  },
+  "PASSPORTS": {
+    "CRF-PAS-001284": {
+      "passport_id": "CRF-PAS-001284",
+      "product_id": "CRF-BAM-001284",
+      "artisan_id": "CRF-ART-001284",
+      "product_name": "Bamboo Handwoven Basket",
+      "craft": "Bamboo Craft",
+      "craft_type": "Assamese Traditional Split Bamboo Weaving",
+      "origin": "Nalbari, Assam",
+      "materials": [
+        "Natural Bamboo",
+        "Cane Binding"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "17 Sep 2026",
+      "verification_status": "VERIFIED",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-001284"
+    },
+    "CRF-PAS-001285": {
+      "passport_id": "CRF-PAS-001285",
+      "product_id": "CRF-MAD-001285",
+      "artisan_id": "CRF-ART-001285",
+      "product_name": "Madhubani Artwork",
+      "craft": "Madhubani Painting",
+      "craft_type": "Mithila Folk Motifs",
+      "origin": "Madhubani, Bihar",
+      "materials": [
+        "Handmade Paper",
+        "Natural Dyes"
+      ],
+      "production_time": "5 Days",
+      "registration_date": "15 Sep 2026",
+      "verification_status": "VERIFIED",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-001285"
+    },
+    "CRF-PAS-000004": {
+      "passport_id": "CRF-PAS-000004",
+      "product_id": "CRF-CRF-000004",
+      "artisan_id": "CRF-ART-000004",
+      "product_name": "Handmade Phulkari Dupatta",
+      "craft": "Phulkari Embroidery",
+      "craft_type": "Pat Silk Embroidery",
+      "origin": "Amritsar, Punjab",
+      "materials": [
+        "Khadi Cotton",
+        "Pat Silk Thread"
+      ],
+      "production_time": "2 Days",
+      "registration_date": "19 Sep 2026",
+      "verification_status": "PENDING",
+      "verification_url": "http://localhost:8000/api/verify/CRF-PAS-000004"
+    }
+  },
+  "PROVENANCE_EVENTS": {
+    "CRF-PAS-001284": [
+      {
+        "event_id": "EVT-001",
+        "passport_id": "CRF-PAS-001284",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Product catalog draft created by artisan Ramesh Kumar",
+        "timestamp": "17 Sep 2026 10:15 IST",
+        "record_hash": "0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+        "status": "Completed"
+      },
+      {
+        "event_id": "EVT-002",
+        "passport_id": "CRF-PAS-001284",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Artisan credentials and origin (Nalbari, Assam) verified",
+        "timestamp": "17 Sep 2026 11:30 IST",
+        "record_hash": "0x8e23a4b91238df11902834019284019283401928301928301928301928301928",
+        "status": "Completed"
+      },
+      {
+        "event_id": "EVT-003",
+        "passport_id": "CRF-PAS-001284",
+        "event_type": "ADMIN_VERIFIED",
+        "description": "CRAFTORA admin verification approved and DPP recorded",
+        "timestamp": "17 Sep 2026 14:00 IST",
+        "record_hash": "0x9182374091823740918237409182374091823740918237409182374091823740",
+        "status": "Completed"
+      }
+    ],
+    "CRF-PAS-001285": [
+      {
+        "event_id": "EVT-004",
+        "passport_id": "CRF-PAS-001285",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Artwork registered by Sita Devi",
+        "timestamp": "15 Sep 2026 09:30 IST",
+        "record_hash": "0x5a11b22c33d44e55f66a77b88c99d00e11f22a33b44c55d66e77f88a99b00c11",
+        "status": "Completed"
+      },
+      {
+        "event_id": "EVT-005",
+        "passport_id": "CRF-PAS-001285",
+        "event_type": "ADMIN_VERIFIED",
+        "description": "Folk art heritage certification reviewed and approved",
+        "timestamp": "15 Sep 2026 16:45 IST",
+        "record_hash": "0x6b22c33d44e55f66a77b88c99d00e11f22a33b44c55d66e77f88a99b00c11d22",
+        "status": "Completed"
+      }
+    ],
+    "CRF-PAS-000004": [
+      {
+        "event_id": "EVT-000004-001",
+        "passport_id": "CRF-PAS-000004",
+        "event_type": "PRODUCT_REGISTERED",
+        "description": "Digital passport created for Handmade Phulkari Dupatta by Sunita Sharma",
+        "timestamp": "19 Sep 2026 02:14 IST",
+        "record_hash": "0x2cb16efbb5ca48f5cd05e52ec8a735116ced440cfcdebd60a7e8eec2fb274b19",
+        "status": "Completed",
+        "title": "Product Registered",
+        "date": "19 Sep 2026 02:14 IST"
+      },
+      {
+        "event_id": "EVT-000004-002",
+        "passport_id": "CRF-PAS-000004",
+        "event_type": "ARTISAN_LINKED",
+        "description": "Authentic origin recorded at Amritsar, Punjab",
+        "timestamp": "19 Sep 2026 02:14 IST",
+        "record_hash": "0x46d6b74be8f3bb10736def7fbfce199c09eaa7a34f513ce40074fb90bdce3ee5",
+        "status": "Completed",
+        "title": "Artisan Linked",
+        "date": "19 Sep 2026 02:14 IST"
+      }
+    ]
+  }
+}

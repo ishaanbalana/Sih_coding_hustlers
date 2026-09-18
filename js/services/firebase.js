@@ -166,7 +166,8 @@ class FirebaseService {
     try {
       const prodId = product.id || product.product_id;
       if (!prodId) return false;
-      await setDoc(doc(this.db, 'products', prodId), product, { merge: true });
+      const cleanData = JSON.parse(JSON.stringify(product));
+      await setDoc(doc(this.db, 'products', prodId), cleanData, { merge: true });
       console.log('🔥 Product synced to Firebase Firestore:', prodId);
       return true;
     } catch (err) {
@@ -179,11 +180,25 @@ class FirebaseService {
     if (!this.isConnected || !this.db || !productId) return false;
     try {
       const prodRef = doc(this.db, 'products', productId);
-      await setDoc(prodRef, updates, { merge: true });
+      const cleanData = JSON.parse(JSON.stringify(updates));
+      await setDoc(prodRef, cleanData, { merge: true });
       console.log('🔥 Product updated in Firebase Firestore:', productId);
       return true;
     } catch (err) {
       this.handleFirebaseError(err, 'updateProduct');
+      return false;
+    }
+  }
+
+  async deleteProduct(productId) {
+    if (!this.isConnected || !this.db || !productId) return false;
+    try {
+      const { deleteDoc } = await import("firebase/firestore");
+      await deleteDoc(doc(this.db, 'products', productId));
+      console.log('🔥 Product deleted from Firebase Firestore:', productId);
+      return true;
+    } catch (err) {
+      this.handleFirebaseError(err, 'deleteProduct');
       return false;
     }
   }

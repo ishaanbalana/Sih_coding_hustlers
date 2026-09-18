@@ -370,7 +370,42 @@ def init_demo_data():
             "updated_at": "18 Sep 2026",
             "buyer_name": "Arjun Sharma",
             "artisan_name": "Ramesh Kumar",
-            "product_title": "Bamboo Handwoven Basket"
         }
+
+        # Check and merge any persisted records
+        load_storage()
+
+def save_storage():
+    """Saves non-demo custom created products and artisans to local disk."""
+    import os, json
+    try:
+        storage_path = os.path.join(os.path.dirname(__file__), "storage.json")
+        with open(storage_path, "w", encoding="utf-8") as f:
+            json.dump({
+                "ARTISANS": ARTISANS,
+                "PRODUCTS": PRODUCTS,
+                "INQUIRIES": INQUIRIES,
+                "PASSPORTS": PASSPORTS,
+                "PROVENANCE_EVENTS": PROVENANCE_EVENTS
+            }, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Notice saving storage: {e}")
+
+def load_storage():
+    """Loads previously saved records from local disk."""
+    import os, json
+    try:
+        storage_path = os.path.join(os.path.dirname(__file__), "storage.json")
+        if os.path.exists(storage_path):
+            with open(storage_path, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+                if isinstance(saved, dict):
+                    ARTISANS.update(saved.get("ARTISANS", {}))
+                    PRODUCTS.update(saved.get("PRODUCTS", {}))
+                    INQUIRIES.update(saved.get("INQUIRIES", {}))
+                    PASSPORTS.update(saved.get("PASSPORTS", {}))
+                    PROVENANCE_EVENTS.update(saved.get("PROVENANCE_EVENTS", {}))
+    except Exception as e:
+        print(f"Notice loading storage: {e}")
 
 init_demo_data()

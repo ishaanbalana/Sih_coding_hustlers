@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status
 from ..models.artisan import ArtisanCreate, ArtisanUpdate, ArtisanResponse, ArtisanDashboardStats
 from ..models.common import VerificationStatus
-from ..data.demo_data import ARTISANS, PRODUCTS, INQUIRIES, _LOCK
+from ..data.demo_data import ARTISANS, PRODUCTS, INQUIRIES, _LOCK, save_storage
 
 router = APIRouter(prefix="/api/artisans", tags=["Artisans"])
 
@@ -30,6 +30,7 @@ def create_artisan(artisan_in: ArtisanCreate):
         artisan_dict["passportCount"] = 0
 
         ARTISANS[artisan_id] = artisan_dict
+        save_storage()
         return ArtisanResponse(**artisan_dict)
 
 @router.get("", response_model=List[ArtisanResponse], summary="List All Artisans")

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from ..models.product import ProductCreate, ProductUpdate, ProductResponse, CostBreakdown, BlockchainRecord
 from ..models.passport import PassportResponse
 from ..models.common import ProductStatus
-from ..data.demo_data import PRODUCTS, ARTISANS, PASSPORTS, PROVENANCE_EVENTS, _LOCK
+from ..data.demo_data import PRODUCTS, ARTISANS, PASSPORTS, PROVENANCE_EVENTS, _LOCK, save_storage
 from ..services.matching_service import MatchingService
 from ..services.passport_service import PassportService
 from ..services.provenance_service import ProvenanceService
@@ -43,10 +43,23 @@ def create_product(product_in: ProductCreate):
     with _LOCK:
         # 1. Validate artisan exists
         if product_in.artisan_id not in ARTISANS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid artisan_id '{product_in.artisan_id}'. Artisan must be registered first."
-            )
+            if product_in.artisan_id and product_in.artisan_id.startswith("CRF-ART-"):
+                ARTISANS[product_in.artisan_id] = {
+                    "artisan_id": product_in.artisan_id,
+                    "name": "Master Artisan",
+                    "craft_category": product_in.category or "Handicrafts",
+                    "craft_specialty": product_in.craft_type or product_in.category or "Handicrafts",
+                    "location": "India",
+                    "phone": "",
+                    "created_at": datetime.now().strftime("%d %b %Y"),
+                    "status": "APPROVED",
+                    "verified": True
+                }
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid artisan_id '{product_in.artisan_id}'. Artisan must be registered first."
+                )
 
         # 2. Determine Product ID
         product_id = product_in.product_id
@@ -97,6 +110,8 @@ def create_product(product_in: ProductCreate):
         verification_status="PENDING"
     )
 
+    save_storage()
+
     with _LOCK:
         return _hydrate_product_response(PRODUCTS[product_id])
 
@@ -142,6 +157,7 @@ def update_product(product_id: str, product_in: ProductUpdate):
                     p[key] = val
         
         p["updated_at"] = datetime.now().strftime("%d %b %Y")
+        save_storage()
         return _hydrate_product_response(p)
 
 @router.delete("/{product_id}", status_code=status.HTTP_200_OK, summary="Delete Product")
@@ -150,6 +166,7 @@ def delete_product(product_id: str):
         if product_id not in PRODUCTS:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product '{product_id}' not found.")
         del PRODUCTS[product_id]
+        save_storage()
         return {"success": True, "message": f"Product '{product_id}' deleted successfully."}
 
 @router.get("/{product_id}/passport", response_model=PassportResponse, summary="Get Product's Digital Product Passport")

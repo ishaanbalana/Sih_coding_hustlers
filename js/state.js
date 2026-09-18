@@ -8,6 +8,7 @@ import { firebaseService } from './services/firebase.js';
 import { showAppToast } from './components/Toast.js';
 
 const STORAGE_KEY = 'CRAFTORA_STATE_V1';
+const CUSTOM_PRODUCTS_KEY = 'CRAFTORA_CUSTOM_PRODUCTS_V1';
 
 class AppStateStore {
   constructor() {
@@ -15,6 +16,43 @@ class AppStateStore {
     this.loadState();
     this.syncWithBackend();
     this.syncWithFirebase();
+  }
+
+  getCustomProducts() {
+    if (typeof localStorage === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem(CUSTOM_PRODUCTS_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  persistCustomProduct(product) {
+    if (typeof localStorage === 'undefined' || !product || !product.id) return;
+    try {
+      const list = this.getCustomProducts();
+      const existingIdx = list.findIndex(p => p.id === product.id);
+      if (existingIdx >= 0) {
+        list[existingIdx] = product;
+      } else {
+        list.unshift(product);
+      }
+      localStorage.setItem(CUSTOM_PRODUCTS_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('Could not persist custom product to localStorage:', e);
+    }
+  }
+
+  removeCustomProduct(productId) {
+    if (typeof localStorage === 'undefined' || !productId) return;
+    try {
+      const list = this.getCustomProducts();
+      const filtered = list.filter(p => p.id !== productId);
+      localStorage.setItem(CUSTOM_PRODUCTS_KEY, JSON.stringify(filtered));
+    } catch (e) {
+      console.warn('Could not remove custom product from localStorage:', e);
+    }
   }
 
   loadState() {
@@ -38,6 +76,18 @@ class AppStateStore {
       }
     } else {
       this.initDefaultState();
+    }
+
+    // Ensure custom products from dedicated storage are ALWAYS retained across page reloads
+    const customProds = this.getCustomProducts();
+    if (customProds.length > 0 && Array.isArray(this.data.products)) {
+      const existingIds = new Set(this.data.products.map(p => p.id));
+      for (const cp of customProds) {
+        if (!existingIds.has(cp.id)) {
+          this.data.products.unshift(cp);
+          existingIds.add(cp.id);
+        }
+      }
     }
   }
 
@@ -682,7 +732,13 @@ class AppStateStore {
       ]);
 
       if (Array.isArray(prods) && prods.length > 0) {
-        this.data.products = prods;
+        // Smart merge: Preserve all local custom products
+        const customProds = this.getCustomProducts();
+        const customIds = new Set(customProds.map(p => p.id));
+        const localCustoms = (this.data.products || []).filter(p => p.isCustom || customIds.has(p.id));
+        
+        const localCustomIds = new Set(localCustoms.map(p => p.id));
+        this.data.products = [...localCustoms, ...prods.filter(p => !localCustomIds.has(p.id))];
       }
 
       if (adminDash) {
@@ -716,14 +772,32 @@ class AppStateStore {
       // 2. Fetch cloud products from Firestore
       const cloudProds = await firebaseService.getProducts();
       if (Array.isArray(cloudProds) && cloudProds.length > 0) {
-        this.data.products = cloudProds;
+        const customProds = this.getCustomProducts();
+        const customIds = new Set(customProds.map(p => p.id));
+        const localCustoms = (this.data.products || []).filter(p => p.isCustom || customIds.has(p.id));
+
+        const cloudIds = new Set(cloudProds.map(p => p.id));
+        this.data.products = [...localCustoms.filter(p => !cloudIds.has(p.id)), ...cloudProds];
+        this.saveState();
         this.notify();
+
+        // Push any local custom products to Firestore if not yet present
+        for (const lp of localCustoms) {
+          if (!cloudIds.has(lp.id)) {
+            firebaseService.saveProduct(lp).catch(() => {});
+          }
+        }
       }
 
       // 3. Set up real-time multi-device listeners
       firebaseService.subscribeToProducts((cloudProds) => {
         if (Array.isArray(cloudProds) && cloudProds.length > 0) {
-          this.data.products = cloudProds;
+          const customProds = this.getCustomProducts();
+          const customIds = new Set(customProds.map(p => p.id));
+          const localCustoms = (this.data.products || []).filter(p => p.isCustom || customIds.has(p.id));
+
+          const cloudIds = new Set(cloudProds.map(p => p.id));
+          this.data.products = [...localCustoms.filter(p => !cloudIds.has(p.id)), ...cloudProds];
           this.saveState();
           this.notify();
         }
@@ -745,6 +819,9 @@ class AppStateStore {
     if (newProduct.isDemo === undefined) {
       newProduct.isDemo = false;
     }
+    newProduct.isCustom = true;
+    this.persistCustomProduct(newProduct);
+
     this.data.products.unshift(newProduct);
     this.data.selectedProductId = newProduct.id;
     this.data.adminStats.productVerificationPending += 1;
@@ -763,6 +840,7 @@ class AppStateStore {
 
     // Asynchronously register in backend
     apiService.createProduct({
+      product_id: newProduct.id,
       artisan_id: newProduct.artisanId || 'CRF-ART-001284',
       name: newProduct.title || newProduct.name,
       category: newProduct.category || 'Handicrafts',
@@ -787,6 +865,9 @@ class AppStateStore {
     const index = this.data.products.findIndex(p => p.id === updatedProduct.id);
     if (index !== -1) {
       this.data.products[index] = { ...this.data.products[index], ...updatedProduct };
+      if (this.data.products[index].isCustom) {
+        this.persistCustomProduct(this.data.products[index]);
+      }
       this.notify();
 
       const p = this.data.products[index];
@@ -851,8 +932,13 @@ class AppStateStore {
       };
     }
 
-    // Central state removal: permanently removes from application state
+    // Central state removal: permanently removes from application state and custom storage
     this.data.products = this.data.products.filter(p => p.id !== productId);
+    this.removeCustomProduct(productId);
+
+    // Sync deletion to Firebase & Backend
+    firebaseService.deleteProduct(productId).catch(err => console.warn('Firebase delete notice:', err));
+    apiService.deleteProduct(productId).catch(err => console.warn('Backend delete notice:', err));
 
     // Update selectedProductId if pointing to the deleted product
     if (this.data.selectedProductId === productId) {
