@@ -4,6 +4,7 @@
 
 import { appState } from '../state.js';
 import { renderIcon } from './Icons.js';
+import { apiService } from '../services/api.js';
 
 export function renderSmartPricingCalculator(product) {
   const breakdown = product.costBreakdown || {
@@ -112,7 +113,7 @@ export function renderSmartPricingCalculator(product) {
   `;
 }
 
-window.recalculatePricing = (productId) => {
+window.recalculatePricing = async (productId) => {
   const matCost = parseFloat(document.getElementById('cost_mat')?.value || 180);
   const labCost = parseFloat(document.getElementById('cost_lab')?.value || 250);
   const timeDays = parseInt(document.getElementById('cost_time')?.value || 2);
@@ -132,4 +133,20 @@ window.recalculatePricing = (productId) => {
     price: sellingPrice,
     costBreakdown: updatedCostBreakdown
   });
+
+  // Query backend smart pricing API for AI indicative price validation
+  try {
+    const calcResult = await apiService.calculatePricing({
+      material_cost: matCost,
+      labour_cost: labCost,
+      production_days: timeDays,
+      packaging_cost: packCost,
+      market_demand: 'medium'
+    });
+    if (calcResult && calcResult.recommended_price) {
+      console.log('⚡ Backend Pricing Engine validated:', calcResult);
+    }
+  } catch (err) {
+    // Graceful offline fallback
+  }
 };

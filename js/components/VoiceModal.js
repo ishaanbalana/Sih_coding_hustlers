@@ -6,6 +6,7 @@
 
 import { appState } from '../state.js';
 import { renderIcon } from './Icons.js';
+import { apiService } from '../services/api.js';
 
 // Voice state (module-level, not in appState to avoid serialization issues)
 let _recognition = null;
@@ -631,6 +632,14 @@ function _applyToProductFields(transcript) {
       updatedFields
     });
   }
+
+  // Call backend voice parser
+  apiService.voiceToProduct(transcript, appState.data.language, appState.data.selectedArtisanId)
+    .then(res => {
+      if (res && res.product_name && titleEl && !titleEl.value.trim()) {
+        titleEl.value = res.product_name;
+      }
+    }).catch(() => {});
 }
 
 /* ── Utility: Title Case ─────────────────────────────────────────── */

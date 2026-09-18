@@ -8,6 +8,7 @@ import { renderSmartPricingCalculator } from '../../components/SmartPricingCalcu
 import { renderDigitalProductPassportCard } from '../../components/DigitalProductPassportCard.js';
 import { renderAIChecklist } from '../../components/AIChecklist.js';
 import { renderIcon } from '../../components/Icons.js';
+import { apiService } from '../../services/api.js';
 
 let _productCameraStream = null;
 
@@ -1321,6 +1322,12 @@ window.completeProfileSetup = () => {
   const phone = appState.data.onboardingDraft?.mobileNumber || '9876543210';
 
   appState.completeArtisanRegistration(nameVal, craftVal, locVal, phone);
+
+  apiService.createArtisan({
+    name: nameVal,
+    craft: craftVal,
+    location: locVal
+  }).catch(err => console.warn('Artisan registration sync warning:', err));
 };
 
 window.loginAsReturningArtisan = () => {
@@ -1473,6 +1480,17 @@ window.proceedWithProductImage = (imageUrl) => {
   appState.addProduct(newDraft);
   appState.data.selectedProductId = newDraft.id;
   appState.setArtisanScreen('ai_analysis', { productId: newDraft.id });
+
+  // Asynchronously request backend AI analysis
+  try {
+    apiService.analyzeProductImage(
+      imageUrl || 'bamboo_basket.png',
+      currentArtisanId,
+      appState.data.language || 'en'
+    ).then(res => {
+      if (res) console.log('⚡ Backend AI Analysis received:', res);
+    }).catch(err => console.warn('AI analysis async notice:', err));
+  } catch(e) {}
 };
 
 window.triggerProductImageUpload = () => {

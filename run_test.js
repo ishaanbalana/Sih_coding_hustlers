@@ -2,7 +2,9 @@ global.window = global;
 global.document = {
   getElementById: (id) => null
 };
-global.navigator = {};
+try {
+  if (!global.navigator) global.navigator = {};
+} catch(e) {}
 global.QRCode = { toCanvas: () => {} };
 
 const _storage = new Map();

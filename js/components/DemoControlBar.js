@@ -77,6 +77,11 @@ export function renderDemoControlBar(state) {
             </button>
           ` : ''}
 
+          <div style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 8px; font-size: 10px; color: #D4E9DC; display: flex; align-items: center; justify-content: space-between;">
+            <span style="display: flex; align-items: center; gap: 4px;">🔥 Cloud Firestore</span>
+            <span style="color: #34D399; font-weight: 700; font-family: monospace;">sihdatabaase</span>
+          </div>
+
           <button onclick="window.resetDemoData()"
                   style="background:none; border:1px solid rgba(220,38,38,0.3); border-radius:6px;
                          color:#EF4444; font-size:11px; font-weight:600; padding:6px 10px;

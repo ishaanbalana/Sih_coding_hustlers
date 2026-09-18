@@ -1,0 +1,20 @@
+{
+  "name": "craftora",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CRAFTORA — AI-Powered Digital Business Platform for Artisans | SIH 2026",
+  "scripts": {
+    "start": "python3 start.py",
+    "dev": "python3 start.py",
+    "frontend": "node server.js",
+    "test:backend": "python3 test_backend.py"
+  },
+  "keywords": [
+    "sih2026",
+    "craftora",
+    "artisans",
+    "smart-cataloging"
+  ],
+  "author": "CRAFTORA Team",
+  "license": "MIT"
+}

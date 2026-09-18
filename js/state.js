@@ -3,6 +3,9 @@
    ========================================================================== */
 
 import { INITIAL_ARTISANS, INITIAL_PRODUCTS, INITIAL_BUYER_REQUESTS, INITIAL_ADMIN_STATS } from './data/mockData.js';
+import { apiService } from './services/api.js';
+import { firebaseService } from './services/firebase.js';
+import { showAppToast } from './components/Toast.js';
 
 const STORAGE_KEY = 'CRAFTORA_STATE_V1';
 
@@ -10,6 +13,8 @@ class AppStateStore {
   constructor() {
     this.listeners = [];
     this.loadState();
+    this.syncWithBackend();
+    this.syncWithFirebase();
   }
 
   loadState() {
@@ -665,6 +670,77 @@ class AppStateStore {
     }
   }
 
+  async syncWithBackend() {
+    try {
+      const isOnline = await apiService.checkHealth();
+      if (!isOnline) return;
+
+      const [prods, adminDash, inqs] = await Promise.all([
+        apiService.getProducts(),
+        apiService.getAdminDashboard(),
+        apiService.getInquiries()
+      ]);
+
+      if (Array.isArray(prods) && prods.length > 0) {
+        this.data.products = prods;
+      }
+
+      if (adminDash) {
+        this.data.adminStats = {
+          registeredArtisans: adminDash.total_artisans,
+          registeredProducts: adminDash.total_products,
+          artisanVerificationPending: adminDash.pending_artisan_verification,
+          productVerificationPending: adminDash.pending_products
+        };
+      }
+
+      if (Array.isArray(inqs) && inqs.length > 0) {
+        this.data.buyerRequests = inqs;
+      }
+
+      this.notify();
+    } catch (e) {
+      console.warn('Backend sync error:', e);
+    }
+  }
+
+  async syncWithFirebase() {
+    try {
+      // 1. Auto-seed initial craft data if Firestore database is empty
+      await firebaseService.autoSeedInitialData(
+        INITIAL_ARTISANS,
+        this.data.products || INITIAL_PRODUCTS,
+        this.data.buyerRequests || INITIAL_BUYER_REQUESTS
+      );
+
+      // 2. Fetch cloud products from Firestore
+      const cloudProds = await firebaseService.getProducts();
+      if (Array.isArray(cloudProds) && cloudProds.length > 0) {
+        this.data.products = cloudProds;
+        this.notify();
+      }
+
+      // 3. Set up real-time multi-device listeners
+      firebaseService.subscribeToProducts((cloudProds) => {
+        if (Array.isArray(cloudProds) && cloudProds.length > 0) {
+          this.data.products = cloudProds;
+          this.saveState();
+          this.notify();
+        }
+      });
+
+      firebaseService.subscribeToInquiries((cloudInqs) => {
+        if (Array.isArray(cloudInqs) && cloudInqs.length > 0) {
+          this.data.buyerRequests = cloudInqs;
+          this.saveState();
+          this.notify();
+        }
+      });
+    } catch (e) {
+      console.warn('Firebase state sync notice:', e);
+    }
+  }
+
   addProduct(newProduct) {
     if (newProduct.isDemo === undefined) {
       newProduct.isDemo = false;
@@ -674,6 +750,37 @@ class AppStateStore {
     this.data.adminStats.productVerificationPending += 1;
     this.data.adminStats.registeredProducts += 1;
     this.notify();
+
+    // Sync to Firebase Cloud Firestore
+    firebaseService.saveProduct(newProduct).catch(err => console.warn('Firebase product sync notice:', err));
+
+    showAppToast({
+      type: 'success',
+      title: 'Craft Saved',
+      message: `"${newProduct.title || newProduct.name}" added to catalog and syncing to cloud.`,
+      duration: 3500
+    });
+
+    // Asynchronously register in backend
+    apiService.createProduct({
+      artisan_id: newProduct.artisanId || 'CRF-ART-001284',
+      name: newProduct.title || newProduct.name,
+      category: newProduct.category || 'Handicrafts',
+      craft_type: newProduct.craft_type || newProduct.category,
+      description: newProduct.description || '',
+      materials: newProduct.materials || ['Natural Materials'],
+      tags: newProduct.tags || ['Handmade'],
+      production_days: newProduct.productionTimeDays || 2,
+      image: newProduct.imageUrl || newProduct.image || 'assets/bamboo_basket.png',
+      price: newProduct.price || 0,
+      cost_breakdown: newProduct.costBreakdown ? {
+        material_cost: newProduct.costBreakdown.materialCost || 0,
+        labour_cost: newProduct.costBreakdown.labourCost || 0,
+        production_days: newProduct.costBreakdown.productionTimeDays || 2,
+        packaging_cost: newProduct.costBreakdown.packagingCost || 0,
+        total_estimated_cost: newProduct.costBreakdown.totalEstimatedCost || 0
+      } : undefined
+    }).catch(err => console.warn('Product sync warning:', err));
   }
 
   updateProduct(updatedProduct) {
@@ -681,6 +788,26 @@ class AppStateStore {
     if (index !== -1) {
       this.data.products[index] = { ...this.data.products[index], ...updatedProduct };
       this.notify();
+
+      const p = this.data.products[index];
+      // Sync to Firebase Cloud Firestore
+      firebaseService.updateProduct(p.id, p).catch(err => console.warn('Firebase update sync notice:', err));
+
+      apiService.updateProduct(p.id, {
+        name: p.title || p.name,
+        category: p.category,
+        price: p.price,
+        description: p.description,
+        materials: p.materials,
+        tags: p.tags,
+        cost_breakdown: p.costBreakdown ? {
+          material_cost: p.costBreakdown.materialCost || 0,
+          labour_cost: p.costBreakdown.labourCost || 0,
+          production_days: p.costBreakdown.productionTimeDays || 2,
+          packaging_cost: p.costBreakdown.packagingCost || 0,
+          total_estimated_cost: p.costBreakdown.totalEstimatedCost || 0
+        } : undefined
+      }).catch(err => console.warn('Update sync warning:', err));
     }
   }
 
@@ -754,6 +881,31 @@ class AppStateStore {
   addBuyerRequest(request) {
     this.data.buyerRequests.unshift(request);
     this.notify();
+
+    // Sync to Firebase Cloud Firestore
+    firebaseService.saveInquiry(request).catch(err => console.warn('Firebase inquiry sync notice:', err));
+
+    showAppToast({
+      type: 'success',
+      title: 'Inquiry Sent',
+      message: `Your inquiry for "${request.productTitle || 'Craft'}" was transmitted to artisan.`,
+      duration: 4000
+    });
+
+    let inqType = 'RETAIL_PURCHASE';
+    const it = (request.interestType || '').toLowerCase();
+    if (it.includes('wholesale') || it.includes('bulk')) inqType = 'BULK_WHOLESALE';
+    else if (it.includes('custom') || it.includes('order')) inqType = 'CUSTOM_ORDER';
+
+    apiService.createInquiry({
+      buyer_id: this.data.buyerAuth?.buyerId || 'BUY-001',
+      buyer_name: request.buyerName || this.data.buyerAuth?.buyerName || 'Arjun Sharma',
+      artisan_id: request.artisanId || 'CRF-ART-001284',
+      product_id: request.productId || 'CRF-BAM-001284',
+      type: inqType,
+      message: request.message || 'Direct inquiry from buyer discovery',
+      quantity: request.quantity || 1
+    }).catch(err => console.warn('Inquiry sync warning:', err));
   }
 
   adminDecision(productId, decision, reviewNote) {
@@ -762,6 +914,9 @@ class AppStateStore {
       if (decision === 'approve') {
         product.status = 'verified';
         product.passportAvailable = true;
+        if (!product.blockchainRecord) {
+          product.blockchainRecord = { events: [] };
+        }
         product.blockchainRecord.events.push({
           title: 'Verification Approved',
           date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
@@ -770,9 +925,43 @@ class AppStateStore {
         if (this.data.adminStats.productVerificationPending > 0) {
           this.data.adminStats.productVerificationPending -= 1;
         }
+
+        showAppToast({
+          type: 'success',
+          title: 'Verification Approved',
+          message: `Product ${productId} approved. Digital Product Passport issued.`,
+          duration: 4000
+        });
+
+        // Sync to Firebase
+        firebaseService.updateProduct(productId, {
+          status: 'verified',
+          passportAvailable: true,
+          reviewNote: reviewNote || 'Approved by Administrator',
+          blockchainRecord: product.blockchainRecord
+        }).catch(err => console.warn('Firebase admin decision sync notice:', err));
+
+        apiService.adminApproveProduct(productId, reviewNote || 'Approved by Administrator')
+          .catch(err => console.warn('Approval sync warning:', err));
       } else if (decision === 'request_changes') {
         product.status = 'changes_requested';
         product.reviewNote = reviewNote;
+
+        showAppToast({
+          type: 'info',
+          title: 'Changes Requested',
+          message: `Review note recorded for product ${productId}.`,
+          duration: 4000
+        });
+
+        // Sync to Firebase
+        firebaseService.updateProduct(productId, {
+          status: 'changes_requested',
+          reviewNote: reviewNote
+        }).catch(err => console.warn('Firebase admin decision sync notice:', err));
+
+        apiService.adminRequestChanges(productId, reviewNote || 'Revisions requested')
+          .catch(err => console.warn('Request changes sync warning:', err));
       }
       this.notify();
     }

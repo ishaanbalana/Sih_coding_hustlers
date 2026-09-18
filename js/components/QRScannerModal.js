@@ -8,6 +8,7 @@
 import { appState } from '../state.js';
 import { INITIAL_PRODUCTS } from '../data/mockData.js';
 import { renderIcon } from './Icons.js';
+import { apiService } from '../services/api.js';
 
 // Global scanner instance tracker
 let _activeCodeReader = null;
@@ -264,9 +265,21 @@ window.handleQRImageUpload = (inputEl) => {
 };
 
 /* ── Simulated QR scan (for demo testing fallback) ───────────────── */
-window.triggerSimulatedQRScan = () => {
+window.triggerSimulatedQRScan = async () => {
   const products = appState.data.products;
   const sampleProduct = products[0] || INITIAL_PRODUCTS[0];
+  appState.data.scannedQRProduct = sampleProduct;
+
+  // Call backend public verification endpoint
+  try {
+    const verifiedData = await apiService.verifyPassport(sampleProduct.id);
+    if (verifiedData) {
+      console.log('⚡ Public QR Verification verified by backend:', verifiedData);
+    }
+  } catch (e) {
+    // Graceful offline fallback
+  }
+
   window.processScannedQRCode(`/verify/${sampleProduct.id}`);
 };
 

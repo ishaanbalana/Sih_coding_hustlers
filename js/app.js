@@ -7,6 +7,7 @@ import { renderDemoControlBar } from './components/DemoControlBar.js';
 import { renderTopNav } from './components/TopNav.js';
 import { renderBottomNav } from './components/BottomNav.js';
 import { renderVoiceModal } from './components/VoiceModal.js';
+import './components/Toast.js';
 
 import { renderLandingView } from './views/shared/LandingView.js';
 import { renderArtisanView } from './views/artisan/ArtisanViews.js';
