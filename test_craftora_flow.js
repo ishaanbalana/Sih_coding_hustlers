@@ -1,11 +1,10 @@
-// Automated Verification Suite for CRAFTORA Functional Pass
 import { appState } from './js/state.js';
 import { renderAdminView } from './js/views/admin/AdminViews.js';
 import { renderArtisanView } from './js/views/artisan/ArtisanViews.js';
 import { renderBuyerView } from './js/views/buyer/BuyerViews.js';
 import { renderLandingView } from './js/views/shared/LandingView.js';
 import { renderQRScannerModal } from './js/components/QRScannerModal.js';
-import { renderVoiceModal, parseArtisanProfileSpeech } from './js/components/VoiceModal.js';
+import { renderVoiceModal, parseArtisanProfileSpeech, parseProductEditSpeech } from './js/components/VoiceModal.js';
 import { renderDemoControlBar } from './js/components/DemoControlBar.js';
 
 let passed = 0;
@@ -244,6 +243,109 @@ assert(appState.data.artisanAuth.isRegistered === true, 'artisanAuth.isRegistere
 assert(appState.data.activeArtisanScreen === 'dashboard', 'Redirected directly to dashboard');
 assert(appState.data.artisanAuth.artisanProfile.name === 'Ramesh Kumar', 'Saved artisan profile loaded: Ramesh Kumar');
 assert(appState.data.artisanAuth.artisanProfile.id === 'CRF-ART-001284', 'Saved artisan ID preserved: CRF-ART-001284');
+
+// ----------------------------------------------------
+// USER TESTS 1–6: Review Your Product Screen Voice Input
+// ----------------------------------------------------
+console.log('\nTESTS 1–6: Review Your Product Screen Voice Input & Field Updates');
+appState.data.currentRole = 'artisan';
+appState.data.selectedProductId = 'CRF-BAM-001284';
+appState.setArtisanScreen('review_product');
+
+const reviewHtmlInitial = renderArtisanView('review_product');
+assert(reviewHtmlInitial.includes('Review Your Product'), 'Review Your Product screen renders');
+assert(reviewHtmlInitial.includes('Make changes by voice'), 'Contains voice action button');
+assert(reviewHtmlInitial.includes('edit_draft_title'), 'Contains Product Name input (edit_draft_title)');
+assert(reviewHtmlInitial.includes('edit_draft_mat'), 'Contains Materials input (edit_draft_mat)');
+assert(reviewHtmlInitial.includes('edit_draft_desc'), 'Contains Description input (edit_draft_desc)');
+
+// TEST 1: Microphone opens & transcript area renders
+window.openVoiceAssistantProduct();
+const voiceProductModalHtml = renderVoiceModal();
+assert(voiceProductModalHtml.includes('voice-transcript-display'), 'TEST 1: Voice modal contains transcript display area');
+assert(voiceProductModalHtml.includes('Change the product name to bamboo basket'), 'TEST 1: Shows contextual product voice suggestions');
+window.closeVoiceModal();
+
+// TEST 2: Speak product-name change -> Product Name field actually updates
+const testSpeechName = "Change the product name to bamboo basket";
+const parsedName = parseProductEditSpeech(testSpeechName);
+assert(parsedName.title === 'Bamboo Basket', `TEST 2: Parsed title is "Bamboo Basket" (got "${parsedName.title}")`);
+
+// Test Hindi product-name change
+const testSpeechNameHi = "नाम बदलकर बाँस की टोकरी कर दो";
+const parsedNameHi = parseProductEditSpeech(testSpeechNameHi);
+assert(parsedNameHi.title === 'बाँस की टोकरी', `TEST 2 (Hindi): Parsed title is "बाँस की टोकरी" (got "${parsedNameHi.title}")`);
+
+// Apply name change to state
+const productObj = appState.data.products.find(p => p.id === 'CRF-BAM-001284');
+productObj.title = parsedName.title;
+appState.data.productVoiceSuggestion = {
+  transcript: testSpeechName,
+  title: parsedName.title,
+  updatedFields: ['Product Name']
+};
+const reviewHtmlAfterName = renderArtisanView('review_product');
+assert(reviewHtmlAfterName.includes('value="Bamboo Basket"'), 'TEST 2: Product Name input value updated to "Bamboo Basket"');
+assert(reviewHtmlAfterName.includes('Voice Suggestion'), 'TEST 2: Voice Suggestion indicator appears on screen');
+
+// TEST 3: Speak material change -> Materials field actually updates
+const testSpeechMat = "Material is natural bamboo";
+const parsedMat = parseProductEditSpeech(testSpeechMat);
+assert(parsedMat.materials === 'Natural Bamboo', `TEST 3: Parsed materials is "Natural Bamboo" (got "${parsedMat.materials}")`);
+
+// Test Hindi material change
+const testSpeechMatHi = "सामग्री प्राकृतिक बाँस है";
+const parsedMatHi = parseProductEditSpeech(testSpeechMatHi);
+assert(parsedMatHi.materials === 'प्राकृतिक बाँस', `TEST 3 (Hindi): Parsed materials is "प्राकृतिक बाँस" (got "${parsedMatHi.materials}")`);
+
+// Apply material change to state
+productObj.materials = [parsedMat.materials];
+appState.data.productVoiceSuggestion = {
+  transcript: testSpeechMat,
+  materials: parsedMat.materials,
+  updatedFields: ['Materials']
+};
+const reviewHtmlAfterMat = renderArtisanView('review_product');
+assert(reviewHtmlAfterMat.includes('value="Natural Bamboo"'), 'TEST 3: Materials input value updated to "Natural Bamboo"');
+
+// TEST 4: Speak description change -> Description field actually updates
+const testSpeechDesc = "Change the description to handmade bamboo basket made in Assam";
+const parsedDesc = parseProductEditSpeech(testSpeechDesc);
+assert(parsedDesc.description === 'Handmade bamboo basket made in Assam', `TEST 4: Parsed description is "Handmade bamboo basket made in Assam"`);
+
+// Test Hindi description change
+const testSpeechDescHi = "विवरण बदलो असम में बनी हस्तनिर्मित बाँस की टोकरी";
+const parsedDescHi = parseProductEditSpeech(testSpeechDescHi);
+assert(parsedDescHi.description === 'असम में बनी हस्तनिर्मित बाँस की टोकरी', `TEST 4 (Hindi): Parsed description is "असम में बनी हस्तनिर्मित बाँस की टोकरी"`);
+
+// Apply description change to state
+productObj.description = parsedDesc.description;
+appState.data.productVoiceSuggestion = {
+  transcript: testSpeechDesc,
+  description: parsedDesc.description,
+  updatedFields: ['Description']
+};
+const reviewHtmlAfterDesc = renderArtisanView('review_product');
+assert(reviewHtmlAfterDesc.includes('Handmade bamboo basket made in Assam'), 'TEST 4: Description textarea content updated');
+
+// Compound command test (name + material in one voice input)
+const compoundSpeech = "Change the product name to Assam Cane Planter. Material is treated natural cane.";
+const parsedCompound = parseProductEditSpeech(compoundSpeech);
+assert(parsedCompound.title === 'Assam Cane Planter', `Compound speech parses title: "${parsedCompound.title}"`);
+assert(parsedCompound.materials === 'Treated Natural Cane', `Compound speech parses materials: "${parsedCompound.materials}"`);
+
+// TEST 5: Manual editing still works after voice input
+const manualEditedName = "Assam Artisan Bamboo Basket (Deluxe)";
+window.syncProductDraftField('title', manualEditedName);
+assert(productObj.title === manualEditedName, 'TEST 5: Manual editing immediately updates product state');
+const reviewHtmlAfterManual = renderArtisanView('review_product');
+assert(reviewHtmlAfterManual.includes(`value="${manualEditedName}"`), 'TEST 5: Manual edit reflected in Product Name input field');
+
+// TEST 6: Language selector toggle works
+appState.data.isVoiceModalOpen = true;
+const voiceLangHtml = renderVoiceModal();
+assert(voiceLangHtml.includes('English (en-IN)') && voiceLangHtml.includes('हिन्दी (hi-IN)'), 'TEST 6: English & Hindi voice selectors available in voice modal');
+appState.data.isVoiceModalOpen = false;
 
 // ----------------------------------------------------
 // REGRESSION TESTS: QR Scanning & Web Speech & Demo Bar

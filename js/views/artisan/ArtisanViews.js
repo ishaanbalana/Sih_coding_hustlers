@@ -364,12 +364,31 @@ function renderScreen6_AIAnalysis() {
 
 // Screen 7 — Review & Edit Draft
 function renderScreen7_ReviewProduct(product) {
+  const state = appState.data;
+  const voiceSuggestion = state.productVoiceSuggestion;
+
   return `
     <div style="padding: 24px 20px;">
       <h2 style="font-size: 20px; margin-bottom: 4px;">Review Your Product</h2>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
         AI has prepared a draft listing.
       </p>
+
+      ${voiceSuggestion ? `
+        <div class="notice-box" style="margin-bottom: 16px; font-size: 12px; text-align: left; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            ${renderIcon('sparkles', '', 16)}
+            <div>
+              <strong>Voice Suggestion:</strong> ${
+                voiceSuggestion.updatedFields && voiceSuggestion.updatedFields.length
+                  ? `Updated <strong>${voiceSuggestion.updatedFields.join(', ')}</strong> from: <em>"${voiceSuggestion.transcript}"</em>`
+                  : `Voice Input: <em>"${voiceSuggestion.transcript}"</em> — review or edit fields below.`
+              }
+            </div>
+          </div>
+          <span class="badge-pill badge-emerald" style="font-size: 10px; white-space: nowrap;">Voice Suggestion</span>
+        </div>
+      ` : ''}
 
       <div style="position: relative; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 16px; border: 1px solid var(--border-medium);">
         <img src="${product.imageUrl}" style="width: 100%; height: 180px; object-fit: cover;">
@@ -380,27 +399,27 @@ function renderScreen7_ReviewProduct(product) {
 
       <div class="form-group">
         <label class="form-label">Product Name</label>
-        <input type="text" id="edit_draft_title" class="form-input" value="${product.title}">
+        <input type="text" id="edit_draft_title" class="form-input" value="${product.title}" oninput="window.syncProductDraftField('title', this.value)">
       </div>
 
       <div class="form-group">
         <label class="form-label">Category</label>
-        <input type="text" id="edit_draft_cat" class="form-input" value="${product.category}">
+        <input type="text" id="edit_draft_cat" class="form-input" value="${product.category}" oninput="window.syncProductDraftField('category', this.value)">
       </div>
 
       <div class="form-group">
         <label class="form-label">Materials</label>
-        <input type="text" id="edit_draft_mat" class="form-input" value="${product.materials.join(', ')}">
+        <input type="text" id="edit_draft_mat" class="form-input" value="${Array.isArray(product.materials) ? product.materials.join(', ') : (product.materials || '')}" oninput="window.syncProductDraftField('materials', this.value)">
       </div>
 
       <div class="form-group">
         <label class="form-label">Description</label>
-        <textarea id="edit_draft_desc" class="form-textarea" rows="3">${product.description}</textarea>
+        <textarea id="edit_draft_desc" class="form-textarea" rows="3" oninput="window.syncProductDraftField('description', this.value)">${product.description}</textarea>
       </div>
 
       <div class="form-group">
         <label class="form-label">Tags</label>
-        <input type="text" id="edit_draft_tags" class="form-input" value="${product.tags.join(', ')}">
+        <input type="text" id="edit_draft_tags" class="form-input" value="${Array.isArray(product.tags) ? product.tags.join(', ') : (product.tags || '')}" oninput="window.syncProductDraftField('tags', this.value)">
       </div>
 
       <button class="btn-voice" style="margin-bottom: 16px;" onclick="window.openVoiceAssistantProduct()">
@@ -810,17 +829,18 @@ function renderScreen16_EditProduct(product) {
 }
 
 // Global Artisan Handlers
-if (!window.openVoiceAssistantProfile) {
-  window.openVoiceAssistantProfile = () => {
-    appState.openVoiceModal();
-  };
-}
-
-if (!window.openVoiceAssistantProduct) {
-  window.openVoiceAssistantProduct = () => {
-    appState.openVoiceModal();
-  };
-}
+window.syncProductDraftField = (field, value) => {
+  const p = appState.data.products.find(item => item.id === appState.data.selectedProductId) || appState.data.products[0];
+  if (p) {
+    if (field === 'materials') {
+      p.materials = value.split(',').map(s => s.trim()).filter(Boolean);
+    } else if (field === 'tags') {
+      p.tags = value.split(',').map(s => s.trim()).filter(Boolean);
+    } else {
+      p[field] = value;
+    }
+  }
+};
 
 window.submitArtisanMobile = () => {
   const phone = document.getElementById('artisan_mobile_input')?.value?.trim() || '';

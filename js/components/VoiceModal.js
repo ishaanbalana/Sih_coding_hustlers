@@ -132,8 +132,8 @@ export function renderVoiceModal() {
             ${renderIcon('sparkles', '', 12)}
             <div style="font-size:11px;">
               ${isHindi
-                ? 'उदाहरण बोलें: "यह बाँस की हस्तनिर्मित टोकरी है, प्राकृतिक बाँस से बनी।"'
-                : 'Say: "Handmade decorative bamboo basket woven from natural Assam bamboo."'}
+                ? 'उदाहरण बोलें: "नाम बदलकर बाँस की टोकरी कर दो", "सामग्री प्राकृतिक बाँस है", "विवरण बदलो..."'
+                : 'Say: "Change the product name to bamboo basket", "Material is natural bamboo", "Change description to..."'}
             </div>
           </div>
         ` : ''}
@@ -424,25 +424,144 @@ function _applyToProfileFields(transcript) {
   }
 }
 
-/* ── Product keyword parser ──────────────────────────────────────── */
-function _applyToProductFields(transcript) {
-  const descEl  = document.getElementById('edit_draft_desc');
-  const titleEl = document.getElementById('edit_draft_title');
+/* ── Bilingual Speech Parser for Product Edits ───────────────────── */
+export function parseProductEditSpeech(transcript) {
+  if (!transcript || typeof transcript !== 'string') return {};
+  const t = transcript.trim();
+  if (!t) return {};
 
-  if (descEl && !descEl.value.trim()) {
-    descEl.value = _titleCase(transcript.trim());
-  }
+  let title = null;
+  let materials = null;
+  let description = null;
 
-  // Try to generate a title from first sentence
-  if (titleEl && !titleEl.value.trim()) {
-    const firstSentence = transcript.split(/[.।]/)[0].trim();
-    if (firstSentence.length > 4 && firstSentence.length < 60) {
-      titleEl.value = _titleCase(firstSentence);
+  // Split clauses if multiple statements are chained (by period, danda, semicolon, newline, or " and then ")
+  const clauses = t.split(/(?:[.।\n]|;\s*|\band\s+then\b)/i).map(s => s.trim()).filter(Boolean);
+
+  for (const clause of (clauses.length ? clauses : [t])) {
+    // 1. Product Name / Title
+    // English: "Change the product name to bamboo basket", "change title to...", "product name is...", etc.
+    const nameMatchEn = clause.match(/(?:change\s+(?:the\s+)?(?:product\s+)?(?:name|title)\s+to|update\s+(?:the\s+)?(?:product\s+)?(?:name|title)\s+to|set\s+(?:the\s+)?(?:product\s+)?(?:name|title)\s+to|(?:product\s+)?name\s+is|title\s+is)\s+([^.।\n]+)/i);
+    if (nameMatchEn && nameMatchEn[1].trim()) {
+      title = _cleanTitle(nameMatchEn[1].trim());
+    } else {
+      // Hindi: "नाम बदलकर बाँस की टोकरी कर दो", "उत्पाद का नाम बाँस की टोकरी है", "नाम बाँस की टोकरी रखो"
+      const nameMatchHi = clause.match(/(?:उत्पाद\s*का\s*नाम|नाम\s*बदलकर|नाम\s*बदलो|नाम)\s+(?:को\s+|है\s+)?([^\d,.!?;:।\n]+?)(?:\s+कर\s*दो|\s+रखो|\s+है|$)/i);
+      if (nameMatchHi && nameMatchHi[1].trim()) {
+        title = _cleanTitle(nameMatchHi[1].trim());
+      }
+    }
+
+    // 2. Materials
+    // English: "Material is natural bamboo", "materials are...", "change material to...", "made of...", "made from..."
+    const matMatchEn = clause.match(/(?:change\s+(?:the\s+)?materials?\s+to|update\s+(?:the\s+)?materials?\s+to|materials?\s+(?:is|are)|made\s+(?:of|from)|using\s+material)\s+([^.।\n]+)/i);
+    if (matMatchEn && matMatchEn[1].trim()) {
+      materials = _cleanTitle(matMatchEn[1].trim());
+    } else {
+      // Hindi: "सामग्री प्राकृतिक बाँस है", "सामग्री बदलो प्राकृतिक बाँस", "सामग्री प्राकृतिक बाँस कर दो"
+      const matMatchHi = clause.match(/(?:सामग्री\s*बदलो|सामग्री\s*है|सामग्री)\s+(?:को\s+|है\s+)?([^\d,.!?;:।\n]+?)(?:\s+कर\s*दो|\s+है|$)/i);
+      if (matMatchHi && matMatchHi[1].trim()) {
+        materials = _cleanTitle(matMatchHi[1].trim());
+      }
+    }
+
+    // 3. Description
+    // English: "Change the description to handmade bamboo basket made in Assam", "description is...", etc.
+    const descMatchEn = clause.match(/(?:change\s+(?:the\s+)?description\s+to|update\s+(?:the\s+)?description\s+to|set\s+(?:the\s+)?description\s+to|description\s+is)\s+(.+)/i);
+    if (descMatchEn && descMatchEn[1].trim()) {
+      description = _cleanSentence(descMatchEn[1].trim());
+    } else {
+      // Hindi: "विवरण बदलो असम में बनी हस्तनिर्मित बाँस की टोकरी", "विवरण है...", "विवरण ... कर दो"
+      const descMatchHi = clause.match(/(?:विवरण\s*बदलो|विवरण\s*है|विवरण)\s+(?:को\s+|है\s+)?(.+?)(?:\s+कर\s*दो|$)/i);
+      if (descMatchHi && descMatchHi[1].trim()) {
+        description = _cleanSentence(descMatchHi[1].trim());
+      }
     }
   }
 
+  // Fallback: If no explicit command keyword was spoken
+  if (!title && !materials && !description) {
+    const lower = t.toLowerCase();
+    if (lower.startsWith('handmade') || lower.startsWith('handcrafted') || t.length > 25) {
+      description = _cleanSentence(t);
+    } else if (t.length >= 3 && t.length <= 40) {
+      title = _cleanTitle(t);
+    }
+  }
+
+  return { title, materials, description, raw: t };
+}
+
+function _cleanTitle(str) {
+  const trimmed = str.trim().replace(/[.,!?;:।]+$/, '');
+  return trimmed.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+function _cleanSentence(str) {
+  const trimmed = str.trim().replace(/[;:]+$/, '');
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
+/* ── Product keyword parser ──────────────────────────────────────── */
+function _applyToProductFields(transcript) {
+  const extracted = parseProductEditSpeech(transcript);
+  const updatedFields = [];
+
+  // 1. Update active product in appState
+  const state = appState.data;
+  const product = state.products.find(p => p.id === state.selectedProductId) || state.products[0];
+
+  if (product) {
+    if (extracted.title) {
+      product.title = extracted.title;
+      updatedFields.push('Product Name');
+    }
+    if (extracted.materials) {
+      product.materials = extracted.materials.split(',').map(s => s.trim()).filter(Boolean);
+      updatedFields.push('Materials');
+    }
+    if (extracted.description) {
+      product.description = extracted.description;
+      updatedFields.push('Description');
+    }
+  }
+
+  // 2. Save voice suggestion metadata into appState
+  state.productVoiceSuggestion = {
+    transcript: transcript,
+    title: extracted.title,
+    materials: extracted.materials,
+    description: extracted.description,
+    updatedFields: updatedFields,
+    timestamp: Date.now()
+  };
+
+  // 3. Update DOM elements directly if rendered
+  const titleEl = document.getElementById('edit_draft_title') || document.getElementById('edit_p_name');
+  const matEl   = document.getElementById('edit_draft_mat')   || document.getElementById('edit_p_mat');
+  const descEl  = document.getElementById('edit_draft_desc')  || document.getElementById('edit_p_desc');
+
+  if (extracted.title && titleEl) {
+    titleEl.value = extracted.title;
+  }
+  if (extracted.materials && matEl) {
+    matEl.value = extracted.materials;
+  }
+  if (extracted.description && descEl) {
+    descEl.value = extracted.description;
+  }
+
+  // 4. Notify appState so the Review Your Product screen re-renders cleanly with Voice Suggestion badge and values
+  appState.notify();
+
+  // 5. Call external callback if registered
   if (typeof _onTranscriptExtracted === 'function') {
-    _onTranscriptExtracted({ transcript, description: transcript });
+    _onTranscriptExtracted({
+      transcript,
+      title: extracted.title,
+      materials: extracted.materials,
+      description: extracted.description,
+      updatedFields
+    });
   }
 }
 
