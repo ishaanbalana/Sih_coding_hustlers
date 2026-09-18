@@ -66,16 +66,12 @@ export function renderLandingView() {
 }
 
 window.selectRoleLanding = (role) => {
-  appState.setRole(role);
   if (role === 'artisan') {
-    if (!appState.data.artisanAuth?.isRegistered) {
-      appState.setArtisanScreen('onboarding');
-    } else {
-      appState.setArtisanScreen('dashboard');
-    }
+    appState.startNewArtisanRegistration();
   } else if (role === 'buyer') {
-    appState.setBuyerScreen('explore');
+    appState.startBuyerAuth();
   } else if (role === 'admin') {
-    appState.setAdminScreen(appState.data.adminAuth?.isLoggedIn ? 'dashboard' : 'login');
+    appState.setRole('admin');
+    appState.setAdminScreen('login');
   }
 };

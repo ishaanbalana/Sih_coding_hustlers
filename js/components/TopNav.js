@@ -10,7 +10,8 @@ export function renderTopNav(showBack = false) {
   const lang = state.language;
   const role = state.currentRole;
 
-  let roleLabel = 'ARTISAN WORKSPACE';
+  let roleLabel = 'DIGITAL PLATFORM';
+  if (role === 'artisan') roleLabel = 'ARTISAN WORKSPACE';
   if (role === 'buyer') roleLabel = 'BUYER DISCOVERY';
   if (role === 'admin') roleLabel = 'ADMIN VERIFICATION';
 
@@ -56,13 +57,15 @@ window.toggleLanguage = () => {
 window.historyBack = () => {
   const state = appState.data;
   const role = state.currentRole;
-  const artisanFlow = ['onboarding', 'profile_step1', 'welcome', 'add_product',
-                       'ai_analysis', 'review_product', 'smart_pricing',
-                       'market_matches', 'passport', 'provenance', 'my_crafts',
-                       'product_detail', 'edit_product'];
+
+  if (role === 'landing') return;
 
   if (role === 'artisan') {
     const current = state.activeArtisanScreen;
+    if (current === 'onboarding') {
+      appState.setRole('landing');
+      return;
+    }
     // Simple back map
     const backMap = {
       onboarding_otp: 'onboarding',
@@ -79,13 +82,19 @@ window.historyBack = () => {
       my_crafts: 'dashboard',
       product_detail: 'my_crafts',
       edit_product: 'product_detail',
-      onboarding: 'dashboard',
     };
     appState.setArtisanScreen(backMap[current] || 'dashboard');
   } else if (role === 'buyer') {
     const current = state.activeBuyerScreen;
+    if (current === 'welcome') {
+      appState.setRole('landing');
+      return;
+    }
     const backMap = {
-      register: 'welcome',
+      buyer_mobile: 'welcome',
+      buyer_otp: 'buyer_mobile',
+      register: 'buyer_otp',
+      buyer_signin: 'welcome',
       product_detail: 'explore',
       artisan_story: 'product_detail',
       passport: 'product_detail',
@@ -98,6 +107,10 @@ window.historyBack = () => {
     appState.setBuyerScreen(backMap[current] || 'explore');
   } else if (role === 'admin') {
     const current = state.activeAdminScreen;
+    if (current === 'login') {
+      appState.setRole('landing');
+      return;
+    }
     const backMap = {
       artisan_list: 'dashboard',
       product_list: 'dashboard',

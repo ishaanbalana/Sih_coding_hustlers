@@ -300,36 +300,125 @@ window.applyVoiceTranscript = () => {
   appState.closeVoiceModal();
 };
 
+/* ── Bilingual Speech Parser for Artisan Profile ─────────────────── */
+export function parseArtisanProfileSpeech(transcript) {
+  if (!transcript || typeof transcript !== 'string') return {};
+  const t = transcript.trim();
+  const lower = t.toLowerCase();
+
+  let name = '';
+  let craft = '';
+  let location = '';
+
+  // 1. Name Parsing
+  // Hindi pattern: "मेरा नाम रमेश है" or "मेरा नाम रमेश कुमार"
+  const hiNameMatch = t.match(/(?:मेरा\s*नाम|नाम\s*है|नाम)\s+([^\d,.!?;:।\n]+?)(?:\s+है|\s+हूँ|\s+हूं|[.,।!]|\s+और|\s+मैं|\s+असम|\s+से|$)/i);
+  if (hiNameMatch && hiNameMatch[1].trim()) {
+    name = _cleanName(hiNameMatch[1].trim());
+  }
+
+  // English pattern: "My name is Ramesh" or "I am Ramesh"
+  if (!name) {
+    const enNameMatch = t.match(/(?:my\s*name\s*is|i\s*am|name\s*is)\s+([a-zA-Z\s]+?)(?:[.,!?]|\s+and\b|\bi\s+make\b|\bi\s+am\s+from\b|\bfrom\b|$)/i);
+    if (enNameMatch && enNameMatch[1].trim()) {
+      name = _cleanName(enNameMatch[1].trim());
+    }
+  }
+
+  // 2. Craft Parsing (Map keywords to CRAFTORA Catalog Crafts)
+  if (lower.includes('bamboo') || lower.includes('basket') || lower.includes('बाँस') || lower.includes('बांस') || lower.includes('टोकरी')) {
+    craft = 'Bamboo Craft';
+  } else if (lower.includes('madhubani') || lower.includes('मधुबनी') || lower.includes('मिथिला') || lower.includes('painting') || lower.includes('चित्रकला') || lower.includes('पेंटिंग')) {
+    craft = 'Madhubani Painting';
+  } else if (lower.includes('blue pottery') || lower.includes('pottery') || lower.includes('घड़ा') || lower.includes('मिट्टी') || lower.includes('बर्तन')) {
+    craft = 'Blue Pottery';
+  } else if (lower.includes('phulkari') || lower.includes('embroidery') || lower.includes('फुलकारी') || lower.includes('कढ़ाई')) {
+    craft = 'Phulkari Embroidery';
+  } else if (lower.includes('banarasi') || lower.includes('weaving') || lower.includes('saree') || lower.includes('बनारसी') || lower.includes('बुनाई') || lower.includes('साड़ी')) {
+    craft = 'Banarasi Weaving';
+  } else if (lower.includes('terracotta') || lower.includes('टेराकोटा') || lower.includes('clay work')) {
+    craft = 'Terracotta Clay Work';
+  }
+
+  // 3. Location Parsing
+  const locationMap = [
+    { keys: ['assam', 'असम'], name: 'Assam, India' },
+    { keys: ['bihar', 'बिहार', 'patna', 'पटना', 'madhubani'], name: 'Bihar, India' },
+    { keys: ['rajasthan', 'राजस्थान', 'jaipur', 'जयपुर'], name: 'Jaipur, Rajasthan' },
+    { keys: ['punjab', 'पंजाब', 'amritsar', 'अमृतसर'], name: 'Punjab, India' },
+    { keys: ['varanasi', 'वाराणसी', 'banaras', 'बनारस', 'uttar pradesh', 'उत्तर प्रदेश', 'up'], name: 'Varanasi, UP' },
+    { keys: ['bengal', 'पश्चिम बंगाल', 'bankura', 'बांकुरा', 'kolkata'], name: 'West Bengal, India' },
+    { keys: ['delhi', 'दिल्ली'], name: 'Delhi, India' },
+    { keys: ['kashmir', 'कश्मीर'], name: 'Kashmir, India' },
+    { keys: ['gujarat', 'गुजरात'], name: 'Gujarat, India' },
+    { keys: ['odisha', 'ओडिशा'], name: 'Odisha, India' }
+  ];
+
+  for (const loc of locationMap) {
+    if (loc.keys.some(k => lower.includes(k))) {
+      location = loc.name;
+      break;
+    }
+  }
+
+  // Fallback regex if specific state was not in dictionary
+  if (!location) {
+    const locMatchEn = t.match(/(?:from|in|live in|based in)\s+([a-zA-Z\s]+?)(?:[.,!?]|\s+and\b|\bi\s+make\b|$)/i);
+    if (locMatchEn && locMatchEn[1].trim()) {
+      location = _titleCase(locMatchEn[1].trim());
+    } else {
+      const locMatchHi = t.match(/([^\d,.!?;:।\n]+?)\s*से\s*(?:हूँ|रहता|हूँ|आता)/i);
+      if (locMatchHi && locMatchHi[1].trim()) {
+        location = locMatchHi[1].trim();
+      }
+    }
+  }
+
+  return { name, craft, location };
+}
+
+function _cleanName(raw) {
+  return raw
+    .replace(/\b(?:my|name|is|i|am)\b/gi, '')
+    .replace(/(?:मेरा|नाम|है|हूँ|हूं)/g, '')
+    .trim()
+    .replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
 /* ── Profile keyword parser ──────────────────────────────────────── */
 function _applyToProfileFields(transcript) {
-  const t = transcript.toLowerCase();
+  const extracted = parseArtisanProfileSpeech(transcript);
 
-  // Extract name — look for "name is X", "मेरा नाम X है", or first proper noun pattern
-  let extractedName = null;
-  const nameMatch = t.match(/(?:name is|my name is|i am|मेरा नाम|नाम है)\s+([a-z\u0900-\u097f ]+?)(?:\s+(?:and|from|,|।)|$)/i);
-  if (nameMatch) {
-    extractedName = _titleCase(nameMatch[1].trim());
+  // 1. Update persistent state draft
+  if (!appState.data.onboardingDraft) appState.data.onboardingDraft = {};
+  if (extracted.name) appState.data.onboardingDraft.name = extracted.name;
+  if (extracted.craft) appState.data.onboardingDraft.craftCategory = extracted.craft;
+  if (extracted.location) appState.data.onboardingDraft.location = extracted.location;
+  appState.data.onboardingDraft.voiceTranscript = transcript;
+  appState.data.onboardingDraft.isVoiceExtracted = true;
+
+  // 2. If elements already exist in DOM, update them immediately
+  const nameEl  = document.getElementById('artisan_name_input');
+  const craftEl = document.getElementById('artisan_craft_select');
+  const locEl   = document.getElementById('artisan_location_input');
+
+  if (extracted.name && nameEl) nameEl.value = extracted.name;
+  if (extracted.craft && craftEl) craftEl.value = extracted.craft;
+  if (extracted.location && locEl) locEl.value = extracted.location;
+
+  // 3. If currently in onboarding mobile/OTP or welcome, navigate directly to profile setup
+  if (appState.data.currentRole === 'artisan' && appState.data.activeArtisanScreen !== 'profile_step1') {
+    appState.setArtisanScreen('profile_step1');
+  } else {
+    appState.notify();
   }
 
-  // Extract location — look for "from X", "in X", "X से हूँ"
-  let extractedLoc = null;
-  const locMatch = t.match(/(?:from|in|live in|based in|असम|बिहार|राजस्थान|X से)\s+([a-z\u0900-\u097f ,]+?)(?:\s+(?:and|,|।|i make)|$)/i);
-  if (locMatch) {
-    extractedLoc = _titleCase(locMatch[1].trim().replace(/[।,]+$/, ''));
-  }
-
-  // Apply to DOM if elements exist
-  const nameEl = document.getElementById('artisan_name_input');
-  const locEl  = document.getElementById('artisan_location_input');
-
-  if (extractedName && nameEl) nameEl.value = extractedName;
-  if (extractedLoc && locEl) locEl.value = extractedLoc;
-
-  // Also call the external callback if one was registered
+  // 4. Also call the external callback if one was registered
   if (typeof _onTranscriptExtracted === 'function') {
     _onTranscriptExtracted({
-      name: extractedName || '',
-      location: extractedLoc || '',
+      name: extracted.name || '',
+      craft: extracted.craft || '',
+      location: extracted.location || '',
       transcript: transcript
     });
   }

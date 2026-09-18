@@ -32,36 +32,70 @@ class AppStateStore {
 
   initDefaultState() {
     this.data = {
-      // Role & Navigation State
-      currentRole: 'artisan', // 'artisan' | 'buyer' | 'admin'
+      // Role & Navigation State — Default Screen 1 Role Selection Entry Point
+      currentRole: 'landing', // 'landing' | 'artisan' | 'buyer' | 'admin'
       language: 'EN', // 'EN' | 'HI'
-      activeArtisanScreen: 'dashboard', // 'landing', 'onboarding', 'profile_step1', 'welcome', 'add_product', 'ai_analysis', 'review_product', 'smart_pricing', 'market_matches', 'passport', 'provenance', 'verify_qr', 'dashboard', 'my_crafts', 'product_detail', 'edit_product'
-      activeBuyerScreen: 'explore', // 'welcome', 'register', 'explore', 'product_detail', 'artisan_story', 'passport', 'scan_qr', 'connect', 'connect_success', 'profile'
-      activeAdminScreen: 'dashboard', // 'login', 'dashboard', 'artisan_list', 'product_list', 'provenance_logs', 'review_detail'
+      activeArtisanScreen: 'onboarding', // 'onboarding', 'onboarding_otp', 'profile_step1', 'artisan_id_card', 'welcome', 'add_product', 'ai_analysis', 'review_product', 'smart_pricing', 'market_matches', 'passport', 'provenance', 'dashboard', 'my_crafts', 'product_detail', 'edit_product'
+      activeBuyerScreen: 'welcome', // 'welcome', 'buyer_mobile', 'buyer_otp', 'register', 'buyer_signin', 'explore', 'product_detail', 'artisan_story', 'passport', 'scan_qr', 'connect', 'connect_success', 'profile'
+      activeAdminScreen: 'login', // 'login', 'dashboard', 'artisan_list', 'product_list', 'provenance_logs', 'review_detail'
 
       // Authentication & Onboarding State
       artisanAuth: {
-        isRegistered: true, // true = returning artisan (lands on dashboard), false = new artisan (onboarding)
-        artisanProfile: INITIAL_ARTISANS[0]
+        isRegistered: false, // false = new artisan starts empty registration; true = returning artisan
+        artisanProfile: null
       },
       buyerAuth: {
         isRegistered: false, // false = new or guest buyer, true = registered buyer
-        isGuest: true,
-        buyerName: 'Arjun Sharma',
-        mobileNumber: '+91 9876543210'
+        isGuest: false,
+        buyerProfile: null,
+        buyerName: '',
+        mobileNumber: '',
+        city: ''
       },
       adminAuth: {
         isLoggedIn: false, // Default unauthenticated; demo login requires admin / admin123
         adminId: 'admin'
       },
+
+      // New Artisan registration draft — ALWAYS starts completely empty
       onboardingDraft: {
-        mobileNumber: '9876543210',
+        mobileNumber: '',
         otp: '',
-        name: 'Ramesh Kumar',
-        craftCategory: 'Bamboo Craft',
-        location: 'Assam, India',
-        artisanId: ''
+        name: '',
+        craftCategory: '',
+        location: '',
+        artisanId: '',
+        voiceTranscript: '',
+        isVoiceExtracted: false
       },
+
+      // Buyer registration draft
+      buyerDraft: {
+        mobileNumber: '',
+        otp: '',
+        name: '',
+        city: '',
+        buyerId: ''
+      },
+
+      // Saved returning profiles for persistence (Separate from new registrations)
+      savedArtisans: [
+        {
+          id: 'CRF-ART-001284',
+          name: 'Ramesh Kumar',
+          craftCategory: 'Bamboo Craft',
+          location: 'Assam, India',
+          mobileNumber: '9876543210'
+        }
+      ],
+      savedBuyers: [
+        {
+          id: 'CRF-BUY-001001',
+          name: 'Arjun Sharma',
+          mobileNumber: '9876543210',
+          city: 'New Delhi'
+        }
+      ],
 
       // Core Data Collections
       artisans: INITIAL_ARTISANS,
@@ -131,9 +165,20 @@ class AppStateStore {
   }
 
   setAdminScreen(screen, params = {}) {
+    // Normal artisan/buyer users cannot access admin routes
     if (this.data.currentRole !== 'admin') {
-      this.data.currentRole = 'admin';
+      console.warn('Unauthorized access attempt to admin route from role:', this.data.currentRole);
+      if (this.data.currentRole === 'artisan') {
+        this.data.activeArtisanScreen = this.data.artisanAuth?.isRegistered ? 'dashboard' : 'onboarding';
+      } else if (this.data.currentRole === 'buyer') {
+        this.data.activeBuyerScreen = 'explore';
+      } else {
+        this.data.currentRole = 'landing';
+      }
+      this.notify();
+      return;
     }
+
     if (!this.data.adminAuth?.isLoggedIn) {
       this.data.activeAdminScreen = 'login';
     } else {
@@ -158,24 +203,127 @@ class AppStateStore {
   logoutAdmin() {
     this.data.adminAuth.isLoggedIn = false;
     this.data.activeAdminScreen = 'login';
+    this.data.currentRole = 'landing';
     this.notify();
+  }
+
+  // Artisan Auth Flow Handlers
+  startNewArtisanRegistration() {
+    this.data.currentRole = 'artisan';
+    this.data.activeArtisanScreen = 'onboarding';
+    this.data.artisanAuth.isRegistered = false;
+    this.data.artisanAuth.artisanProfile = null;
+    this.data.onboardingDraft = {
+      mobileNumber: '',
+      otp: '',
+      name: '',
+      craftCategory: '',
+      location: '',
+      artisanId: '',
+      voiceTranscript: '',
+      isVoiceExtracted: false
+    };
+    this.notify();
+  }
+
+  loginReturningArtisan(mobileNumber = '9876543210') {
+    const cleanNumber = (mobileNumber || '').replace(/\D/g, '');
+    const found = (this.data.savedArtisans || []).find(a => (a.mobileNumber || '').replace(/\D/g, '') === cleanNumber)
+      || this.data.savedArtisans[0]
+      || INITIAL_ARTISANS[0];
+
+    this.data.currentRole = 'artisan';
+    this.data.artisanAuth.isRegistered = true;
+    this.data.artisanAuth.artisanProfile = { ...found };
+    this.data.activeArtisanScreen = 'dashboard';
+    this.notify();
+    return { success: true, profile: found };
   }
 
   toggleArtisanOnboardingState(isRegistered) {
-    this.data.artisanAuth.isRegistered = isRegistered;
     if (isRegistered) {
-      this.data.activeArtisanScreen = 'dashboard';
+      this.loginReturningArtisan();
     } else {
-      this.data.activeArtisanScreen = 'onboarding';
+      this.startNewArtisanRegistration();
     }
+  }
+
+  // Buyer Auth Flow Handlers
+  startBuyerAuth() {
+    this.data.currentRole = 'buyer';
+    this.data.activeBuyerScreen = 'welcome';
+    this.data.buyerDraft = {
+      mobileNumber: '',
+      otp: '',
+      name: '',
+      city: '',
+      buyerId: ''
+    };
+    this.data.buyerAuth.isRegistered = false;
+    this.data.buyerAuth.isGuest = false;
     this.notify();
   }
 
-  toggleBuyerAuthState(isRegistered, isGuest = false) {
-    this.data.buyerAuth.isRegistered = isRegistered;
-    this.data.buyerAuth.isGuest = isGuest;
+  continueBuyerAsGuest() {
+    this.data.currentRole = 'buyer';
+    this.data.buyerAuth.isRegistered = false;
+    this.data.buyerAuth.isGuest = true;
+    this.data.buyerAuth.buyerName = 'Guest Explorer';
     this.data.activeBuyerScreen = 'explore';
     this.notify();
+  }
+
+  loginReturningBuyer(mobileNumber = '9876543210') {
+    const cleanNumber = (mobileNumber || '').replace(/\D/g, '');
+    const found = (this.data.savedBuyers || []).find(b => (b.mobileNumber || '').replace(/\D/g, '') === cleanNumber)
+      || this.data.savedBuyers[0]
+      || { id: 'CRF-BUY-001001', name: 'Arjun Sharma', mobileNumber: '9876543210', city: 'New Delhi' };
+
+    this.data.currentRole = 'buyer';
+    this.data.buyerAuth.isRegistered = true;
+    this.data.buyerAuth.isGuest = false;
+    this.data.buyerAuth.buyerProfile = { ...found };
+    this.data.buyerAuth.buyerName = found.name;
+    this.data.buyerAuth.mobileNumber = found.mobileNumber;
+    this.data.buyerAuth.city = found.city;
+    this.data.activeBuyerScreen = 'explore';
+    this.notify();
+    return { success: true, profile: found };
+  }
+
+  completeBuyerRegistration(name, city, mobileNumber) {
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+    const generatedId = `CRF-BUY-${randomSuffix}`;
+    const newBuyer = {
+      id: generatedId,
+      name: name || 'Valued Buyer',
+      city: city || 'India',
+      mobileNumber: mobileNumber || this.data.buyerDraft?.mobileNumber || '9876543210'
+    };
+
+    if (!this.data.savedBuyers) this.data.savedBuyers = [];
+    this.data.savedBuyers.push(newBuyer);
+
+    this.data.currentRole = 'buyer';
+    this.data.buyerAuth.isRegistered = true;
+    this.data.buyerAuth.isGuest = false;
+    this.data.buyerAuth.buyerProfile = newBuyer;
+    this.data.buyerAuth.buyerName = newBuyer.name;
+    this.data.buyerAuth.mobileNumber = newBuyer.mobileNumber;
+    this.data.buyerAuth.city = newBuyer.city;
+    this.data.activeBuyerScreen = 'explore';
+    this.notify();
+    return newBuyer;
+  }
+
+  toggleBuyerAuthState(isRegistered, isGuest = false) {
+    if (isGuest) {
+      this.continueBuyerAsGuest();
+    } else if (isRegistered) {
+      this.loginReturningBuyer();
+    } else {
+      this.startBuyerAuth();
+    }
   }
 
   addProduct(newProduct) {
@@ -241,6 +389,15 @@ class AppStateStore {
       materials: "Natural Bamboo",
       description: "Handcrafted bamboo basket made with traditional techniques."
     };
+    if (!this.data.onboardingDraft) this.data.onboardingDraft = {};
+    this.data.onboardingDraft.name = extracted.name;
+    this.data.onboardingDraft.craftCategory = extracted.craft;
+    this.data.onboardingDraft.location = extracted.location;
+    this.data.onboardingDraft.voiceTranscript = this.data.voiceTranscript;
+    this.data.onboardingDraft.isVoiceExtracted = true;
+    if (this.data.currentRole === 'artisan') {
+      this.data.activeArtisanScreen = 'profile_step1';
+    }
     if (this.onSpeechExtracted) {
       this.onSpeechExtracted(extracted);
     }

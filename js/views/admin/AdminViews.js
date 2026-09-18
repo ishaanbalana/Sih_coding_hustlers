@@ -10,7 +10,30 @@ export function renderAdminView(screen) {
   const state = appState.data;
   const products = state.products;
 
-  // STRICT RULE: Only users with role === 'admin' and adminAuth.isLoggedIn === true can access admin routes
+  // STRICT RULE: Only users with role === 'admin' can access admin views. Normal Artisan and Buyer users cannot.
+  if (state.currentRole !== 'admin') {
+    // Non-admin attempting to access admin route is redirected away
+    setTimeout(() => {
+      if (state.currentRole === 'artisan') {
+        appState.setArtisanScreen(state.artisanAuth?.isRegistered ? 'dashboard' : 'onboarding');
+      } else if (state.currentRole === 'buyer') {
+        appState.setBuyerScreen('explore');
+      } else {
+        appState.setRole('landing');
+      }
+    }, 0);
+    return `
+      <div style="padding: 40px 20px; text-align: center;">
+        <div style="color: var(--danger); margin-bottom: 12px;">${renderIcon('alertCircle', '', 36)}</div>
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--danger); margin-bottom: 8px;">Access Denied</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+          Admin Portal is restricted to authorized administrators. Redirecting...
+        </p>
+      </div>
+    `;
+  }
+
+  // Admin must log in with demo credentials
   if (!state.adminAuth?.isLoggedIn) {
     return renderScreenA1_AdminLogin();
   }
@@ -41,7 +64,7 @@ function renderScreenA1_AdminLogin() {
       </div>
       <h2 style="font-size: 20px; margin-bottom: 2px;">CRAFTORA ADMIN</h2>
       <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 24px;">
-        VERIFICATION PORTAL (DEMO AUTH)
+        VERIFICATION PORTAL (DEMO ADMIN LOGIN)
       </div>
 
       <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
@@ -77,7 +100,7 @@ function renderScreenA1_AdminLogin() {
       </div>
 
       <button class="btn-secondary" style="max-width: 220px; margin: 0 auto; font-size: 12px; padding: 8px 14px;" onclick="window.exitAdminMode()">
-        ← Back to Artisan Portal
+        ← Back to CRAFTORA Home
       </button>
     </div>
   `;
@@ -375,6 +398,6 @@ window.logoutAdmin = () => {
 };
 
 window.exitAdminMode = () => {
-  appState.setRole('artisan');
-  appState.setArtisanScreen('dashboard');
+  appState.logoutAdmin();
+  appState.setRole('landing');
 };

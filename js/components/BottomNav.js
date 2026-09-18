@@ -11,6 +11,9 @@ export function renderBottomNav() {
 
   if (role === 'artisan') {
     const active = state.activeArtisanScreen;
+    if (['onboarding', 'onboarding_otp', 'profile_step1', 'artisan_id_card'].includes(active)) {
+      return '';
+    }
     return `
       <nav class="bottom-nav">
         <button class="nav-tab ${active === 'dashboard' ? 'active' : ''}" onclick="window.navArtisan('dashboard')">
@@ -25,7 +28,7 @@ export function renderBottomNav() {
           <span class="nav-tab-icon">${renderIcon('users', '', 18)}</span>
           <span>Buyers</span>
         </button>
-        <button class="nav-tab ${active === 'onboarding' ? 'active' : ''}" onclick="window.navArtisan('onboarding')">
+        <button class="nav-tab ${active === 'artisan_id_card' ? 'active' : ''}" onclick="window.navArtisan('artisan_id_card')">
           <span class="nav-tab-icon">${renderIcon('user', '', 18)}</span>
           <span>Me</span>
         </button>
@@ -35,6 +38,9 @@ export function renderBottomNav() {
 
   if (role === 'buyer') {
     const active = state.activeBuyerScreen;
+    if (['welcome', 'buyer_mobile', 'buyer_otp', 'register', 'buyer_signin'].includes(active)) {
+      return '';
+    }
     return `
       <nav class="bottom-nav">
         <button class="nav-tab ${active === 'explore' ? 'active' : ''}" onclick="window.navBuyer('explore')">

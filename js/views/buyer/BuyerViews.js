@@ -19,8 +19,14 @@ export function renderBuyerView(screen) {
   switch (screen) {
     case 'welcome':
       return renderScreen2B_BuyerWelcome();
+    case 'buyer_mobile':
+      return renderScreen2B_BuyerMobile();
+    case 'buyer_otp':
+      return renderScreen2B_BuyerOTP();
     case 'register':
       return renderScreen3B_BuyerRegistration();
+    case 'buyer_signin':
+      return renderScreen2B_BuyerSignIn();
     case 'product_detail':
       return renderScreenB4_ProductDetails(selectedProduct);
     case 'artisan_story':
@@ -47,13 +53,16 @@ export function renderBuyerView(screen) {
 function renderScreen2B_BuyerWelcome() {
   return `
     <div style="padding: 24px 20px; text-align: center;">
-      <h2 style="font-size: 20px; margin-bottom: 4px;">Welcome, Buyer 👋</h2>
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        BUYER DISCOVERY
+      </div>
+      <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Welcome, Buyer 👋</h2>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 28px;">
         Discover authentic handmade crafts & meet the artisans behind them.
       </p>
 
       <div style="display: flex; flex-direction: column; gap: 14px; max-width: 320px; margin: 0 auto 20px;">
-        <button class="btn-primary" onclick="window.navBuyer('register')">
+        <button class="btn-primary" onclick="window.navBuyer('buyer_mobile')">
           ${renderIcon('user', '', 18)} Continue with Mobile
         </button>
 
@@ -65,37 +74,176 @@ function renderScreen2B_BuyerWelcome() {
       </div>
 
       <div style="font-size: 12px; color: var(--text-muted); margin-top: 20px;">
-        Already registered? <a href="#" onclick="window.navBuyer('register'); return false;">Sign In</a>
+        Already registered? <a href="#" onclick="window.navBuyer('buyer_signin'); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Sign In</a>
       </div>
     </div>
   `;
 }
 
-// Screen 3B — Buyer Registration
+// Screen 2B-2 — Buyer Mobile Input
+function renderScreen2B_BuyerMobile() {
+  const draft = appState.data.buyerDraft || {};
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        BUYER AUTHENTICATION · STEP 1 OF 3
+      </div>
+      <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Enter Mobile Number</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+        We'll send a 4-digit demo OTP to verify your account.
+      </p>
+
+      <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
+        <div class="form-group">
+          <label class="form-label">Mobile Number</label>
+          <div style="display: flex; gap: 8px;">
+            <span style="display: flex; align-items: center; padding: 10px 12px; background: var(--bg-elevated); border: 1.5px solid var(--border-light); border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; color: var(--text-primary);">
+              🇮🇳 +91
+            </span>
+            <input type="tel" id="buyer_mobile_input" class="form-input" maxlength="10"
+                   value="${draft.mobileNumber || ''}" placeholder="10-digit number" style="font-size: 15px; letter-spacing: 0.05em; font-weight: 600;">
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 6px;">
+          ${renderIcon('shield', '', 14)} Secure verification. Demo OTP (1234) provided.
+        </div>
+
+        <button class="btn-primary" onclick="window.submitBuyerMobile()">
+          Send Demo OTP ${renderIcon('arrowRight', '', 16)}
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto;">
+        <div style="font-size: 12px; color: var(--text-muted);">
+          Already registered? <a href="#" onclick="window.navBuyer('buyer_signin'); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Sign In</a>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);">
+          <a href="#" onclick="window.continueAsGuest(); return false;" style="color: var(--text-secondary);">Continue as Guest</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Screen 2B-3 — Buyer Demo OTP Verification
+function renderScreen2B_BuyerOTP() {
+  const draft = appState.data.buyerDraft || {};
+  const phone = draft.mobileNumber || '9876543210';
+
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        BUYER AUTHENTICATION · STEP 2 OF 3
+      </div>
+      <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Verify Mobile Number</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+        Enter the 4-digit demo OTP sent to <strong>+91 ${phone}</strong>
+      </p>
+
+      <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
+        <div id="buyer_otp_error" style="display:none; padding:8px 10px; background:var(--danger-pale); border:1px solid var(--danger); border-radius:var(--radius-sm); color:var(--danger); font-size:12px; margin-bottom:12px;"></div>
+
+        <div class="form-group" style="text-align: center;">
+          <label class="form-label" style="text-align: center;">Enter 4-Digit OTP</label>
+          <input type="text" id="buyer_otp_input" class="form-input" maxlength="4" value="1234"
+                 style="text-align: center; font-size: 24px; font-weight: 800; letter-spacing: 0.4em; width: 180px; margin: 0 auto; color: var(--green);">
+        </div>
+
+        <div class="notice-box" style="margin-bottom: 16px; font-size: 12px; text-align: left;">
+          ${renderIcon('sparkles', '', 14)}
+          <div><strong>Demo Mode Active:</strong><br>Use OTP <strong>1234</strong> to simulate instant verification.</div>
+        </div>
+
+        <button class="btn-primary" onclick="window.verifyBuyerOTP()">
+          Verify & Continue ${renderIcon('arrowRight', '', 16)}
+        </button>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-muted);">
+        Didn't receive code? <a href="#" onclick="alert('Demo OTP is 1234'); return false;" style="color: var(--copper); font-weight: 600;">Resend OTP</a> • <a href="#" onclick="window.navBuyer('buyer_mobile'); return false;" style="color: var(--text-secondary);">Change Number</a>
+      </div>
+    </div>
+  `;
+}
+
+// Screen 3B — Buyer Registration / Profile
 function renderScreen3B_BuyerRegistration() {
+  const draft = appState.data.buyerDraft || {};
   return `
     <div style="padding: 24px 20px;">
-      <h2 style="font-size: 20px; margin-bottom: 4px;">Create Your Account</h2>
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        BUYER REGISTRATION · STEP 3 OF 3
+      </div>
+      <h2 style="font-size: 20px; margin-bottom: 4px; font-weight: 800;">Setup Buyer Profile</h2>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
-        Join CRAFTORA and discover handmade crafts directly from master artisans.
+        Join CRAFTORA to discover handmade crafts directly from master artisans.
       </p>
 
       <div class="form-group">
         <label class="form-label">Your Name</label>
-        <input type="text" id="buyer_reg_name" class="form-input" value="Arjun Sharma">
+        <input type="text" id="buyer_reg_name" class="form-input" value="${draft.name || ''}" placeholder="Enter your name">
       </div>
 
       <div class="form-group">
-        <label class="form-label">Mobile Number</label>
-        <input type="text" id="buyer_reg_phone" class="form-input" value="+91 9876543210">
+        <label class="form-label">City / Delivery Location</label>
+        <input type="text" id="buyer_reg_city" class="form-input" value="${draft.city || ''}" placeholder="Enter your city">
       </div>
 
-      <button class="btn-primary" onclick="window.completeBuyerAuth()">
-        Send OTP ${renderIcon('arrowRight', '', 16)}
+      <div class="form-group">
+        <label class="form-label">Verified Mobile Number</label>
+        <input type="text" id="buyer_reg_phone" class="form-input" value="+91 ${draft.mobileNumber || '9876543210'}" readonly style="background:var(--bg-elevated); color:var(--text-secondary);">
+      </div>
+
+      <button class="btn-primary" onclick="window.submitBuyerRegistration()">
+        Complete Registration & Explore ${renderIcon('arrowRight', '', 16)}
       </button>
 
       <div style="font-size: 11px; color: var(--text-muted); margin-top: 14px; text-align: center;">
-        OTP verification happens as a quick authentication step.
+        Your permanent Buyer ID (CRF-BUY-XXXXX) will be generated.
+      </div>
+    </div>
+  `;
+}
+
+// Screen 2B-4 — Existing Buyer Sign In
+function renderScreen2B_BuyerSignIn() {
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        BUYER SIGN IN
+      </div>
+      <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Welcome Back 👋</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
+        Sign in to your CRAFTORA buyer account.
+      </p>
+
+      <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
+        <div class="form-group">
+          <label class="form-label">Registered Mobile Number</label>
+          <div style="display: flex; gap: 8px;">
+            <span style="display: flex; align-items: center; padding: 10px 12px; background: var(--bg-elevated); border: 1.5px solid var(--border-light); border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; color: var(--text-primary);">
+              🇮🇳 +91
+            </span>
+            <input type="tel" id="buyer_signin_phone" class="form-input" maxlength="10"
+                   value="9876543210" placeholder="10-digit number" style="font-size: 15px; letter-spacing: 0.05em; font-weight: 600;">
+          </div>
+        </div>
+
+        <div class="notice-box" style="margin-bottom: 16px; font-size: 11px;">
+          ${renderIcon('sparkles', '', 13)}
+          <div><strong>Demo Buyer Account:</strong><br>+91 9876543210 (Arjun Sharma)</div>
+        </div>
+
+        <button class="btn-primary" onclick="window.submitBuyerSignIn()">
+          Sign In with Demo OTP ${renderIcon('arrowRight', '', 16)}
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto;">
+        <div style="font-size: 12px; color: var(--text-muted);">
+          New buyer? <a href="#" onclick="window.navBuyer('welcome'); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Create an Account</a>
+        </div>
       </div>
     </div>
   `;
@@ -506,11 +654,57 @@ function renderScreenB9_BuyerProfile(state) {
 
 // Global Buyer Handlers
 window.continueAsGuest = () => {
-  appState.toggleBuyerAuthState(false, true);
+  appState.continueBuyerAsGuest();
+};
+
+window.submitBuyerMobile = () => {
+  const phone = document.getElementById('buyer_mobile_input')?.value?.trim() || '';
+  if (!appState.data.buyerDraft) appState.data.buyerDraft = {};
+  appState.data.buyerDraft.mobileNumber = phone;
+  appState.data.buyerDraft.isSignIn = false;
+  appState.setBuyerScreen('buyer_otp');
+};
+
+window.verifyBuyerOTP = () => {
+  const otp = document.getElementById('buyer_otp_input')?.value?.trim() || '1234';
+  const errEl = document.getElementById('buyer_otp_error');
+  if (otp.length !== 4) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.textContent = 'Please enter a 4-digit OTP (Demo OTP: 1234)';
+    } else {
+      alert('Please enter a 4-digit OTP (Demo OTP: 1234)');
+    }
+    return;
+  }
+  if (!appState.data.buyerDraft) appState.data.buyerDraft = {};
+  appState.data.buyerDraft.otp = otp;
+
+  if (appState.data.buyerDraft.isSignIn) {
+    appState.loginReturningBuyer(appState.data.buyerDraft.mobileNumber);
+  } else {
+    appState.setBuyerScreen('register');
+  }
+};
+
+window.submitBuyerRegistration = () => {
+  const name = document.getElementById('buyer_reg_name')?.value?.trim() || 'Valued Buyer';
+  const city = document.getElementById('buyer_reg_city')?.value?.trim() || 'India';
+  const phone = appState.data.buyerDraft?.mobileNumber || '9876543210';
+
+  appState.completeBuyerRegistration(name, city, phone);
+};
+
+window.submitBuyerSignIn = () => {
+  const phone = document.getElementById('buyer_signin_phone')?.value?.trim() || '9876543210';
+  if (!appState.data.buyerDraft) appState.data.buyerDraft = {};
+  appState.data.buyerDraft.mobileNumber = phone;
+  appState.data.buyerDraft.isSignIn = true;
+  appState.setBuyerScreen('buyer_otp');
 };
 
 window.completeBuyerAuth = () => {
-  appState.toggleBuyerAuthState(true, false);
+  window.submitBuyerRegistration();
 };
 
 window.viewProductDetails = (id) => {

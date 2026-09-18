@@ -28,7 +28,9 @@ function renderApp() {
 
   // Determine active view content
   let mainContent = '';
-  if (role === 'artisan') {
+  if (role === 'landing') {
+    mainContent = renderLandingView();
+  } else if (role === 'artisan') {
     if (state.activeArtisanScreen === 'landing') {
       mainContent = renderLandingView();
     } else {

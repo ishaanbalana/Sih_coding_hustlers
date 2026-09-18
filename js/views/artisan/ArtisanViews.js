@@ -72,7 +72,7 @@ function renderScreen2_MobileInput() {
               🇮🇳 +91
             </span>
             <input type="tel" id="artisan_mobile_input" class="form-input" maxlength="10"
-                   value="${draft.mobileNumber || '9876543210'}" placeholder="10-digit number" style="font-size: 15px; letter-spacing: 0.05em; font-weight: 600;">
+                   value="${draft.mobileNumber || ''}" placeholder="10-digit number" style="font-size: 15px; letter-spacing: 0.05em; font-weight: 600;">
           </div>
         </div>
 
@@ -91,7 +91,7 @@ function renderScreen2_MobileInput() {
         </button>
 
         <div style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
-          Already registered? <a href="#" onclick="window.toggleArtisanAuthMode(); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Sign In to Dashboard</a>
+          Already registered? <a href="#" onclick="window.loginAsReturningArtisan(); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Sign In to Dashboard</a>
         </div>
       </div>
     </div>
@@ -152,6 +152,18 @@ function renderScreen3_ProfileSetup() {
         Tell us about your craft. You can type or use your voice in English or Hindi.
       </p>
 
+      ${draft.isVoiceExtracted ? `
+        <div class="notice-box" style="margin-bottom: 16px; font-size: 12px; text-align: left; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            ${renderIcon('sparkles', '', 16)}
+            <div>
+              <strong>Voice-Suggested Profile:</strong> Fields populated from your transcript. Review and edit as needed.
+            </div>
+          </div>
+          <span class="badge-pill badge-emerald" style="font-size: 10px; white-space: nowrap;">Voice AI</span>
+        </div>
+      ` : ''}
+
       <div style="text-align: center; margin-bottom: 18px;">
         <div style="width: 76px; height: 76px; border-radius: 50%; background: var(--bg-elevated); border: 2px dashed var(--text-copper); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: var(--copper); cursor: pointer;" onclick="alert('Profile photo selected!')">
           ${renderIcon('camera', '', 28)}
@@ -161,24 +173,25 @@ function renderScreen3_ProfileSetup() {
 
       <div class="form-group">
         <label class="form-label">Full Name</label>
-        <input type="text" id="artisan_name_input" class="form-input" value="${draft.name || 'Ramesh Kumar'}" placeholder="e.g. Ramesh Kumar">
+        <input type="text" id="artisan_name_input" class="form-input" value="${draft.name || ''}" placeholder="Enter your name">
       </div>
 
       <div class="form-group">
         <label class="form-label">Primary Craft Category</label>
         <select id="artisan_craft_select" class="form-select">
-          <option value="Bamboo Craft" selected>Bamboo Craft (Assam)</option>
-          <option value="Madhubani Painting">Madhubani Painting (Bihar)</option>
-          <option value="Blue Pottery">Blue Pottery (Jaipur, Rajasthan)</option>
-          <option value="Phulkari Embroidery">Phulkari Embroidery (Punjab)</option>
-          <option value="Banarasi Weaving">Banarasi Weaving (Varanasi, UP)</option>
-          <option value="Terracotta Clay Work">Terracotta Clay Work (Bankura, West Bengal)</option>
+          <option value="" disabled ${!draft.craftCategory ? 'selected' : ''}>Select your craft</option>
+          <option value="Bamboo Craft" ${draft.craftCategory === 'Bamboo Craft' ? 'selected' : ''}>Bamboo Craft (Assam)</option>
+          <option value="Madhubani Painting" ${draft.craftCategory === 'Madhubani Painting' ? 'selected' : ''}>Madhubani Painting (Bihar)</option>
+          <option value="Blue Pottery" ${draft.craftCategory === 'Blue Pottery' ? 'selected' : ''}>Blue Pottery (Jaipur, Rajasthan)</option>
+          <option value="Phulkari Embroidery" ${draft.craftCategory === 'Phulkari Embroidery' ? 'selected' : ''}>Phulkari Embroidery (Punjab)</option>
+          <option value="Banarasi Weaving" ${draft.craftCategory === 'Banarasi Weaving' ? 'selected' : ''}>Banarasi Weaving (Varanasi, UP)</option>
+          <option value="Terracotta Clay Work" ${draft.craftCategory === 'Terracotta Clay Work' ? 'selected' : ''}>Terracotta Clay Work (Bankura, West Bengal)</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="form-label">Workshop Location</label>
-        <input type="text" id="artisan_location_input" class="form-input" value="${draft.location || 'Assam, India'}" placeholder="State / District">
+        <input type="text" id="artisan_location_input" class="form-input" value="${draft.location || ''}" placeholder="Enter your location">
       </div>
 
       <button class="btn-voice" style="margin-bottom: 16px;" onclick="window.openVoiceAssistantProfile()">
@@ -810,7 +823,7 @@ if (!window.openVoiceAssistantProduct) {
 }
 
 window.submitArtisanMobile = () => {
-  const phone = document.getElementById('artisan_mobile_input')?.value?.trim() || '9876543210';
+  const phone = document.getElementById('artisan_mobile_input')?.value?.trim() || '';
   if (!appState.data.onboardingDraft) appState.data.onboardingDraft = {};
   appState.data.onboardingDraft.mobileNumber = phone;
   appState.setArtisanScreen('onboarding_otp');
@@ -834,29 +847,41 @@ window.verifyArtisanOTP = () => {
 };
 
 window.completeProfileSetup = () => {
-  const nameVal = document.getElementById('artisan_name_input')?.value?.trim() || 'Ramesh Kumar';
-  const craftVal = document.getElementById('artisan_craft_select')?.value || 'Bamboo Craft';
-  const locVal = document.getElementById('artisan_location_input')?.value?.trim() || 'Assam, India';
+  const nameVal = document.getElementById('artisan_name_input')?.value?.trim() || '';
+  const craftVal = document.getElementById('artisan_craft_select')?.value || '';
+  const locVal = document.getElementById('artisan_location_input')?.value?.trim() || '';
 
   // Generate unique CRAFTORA Artisan User ID (e.g. CRF-ART-784912)
   const randomSuffix = Math.floor(100000 + Math.random() * 900000);
   const generatedId = `CRF-ART-${randomSuffix}`;
 
-  if (!appState.data.artisanAuth.artisanProfile) {
-    appState.data.artisanAuth.artisanProfile = {};
-  }
-  appState.data.artisanAuth.artisanProfile.id = generatedId;
-  appState.data.artisanAuth.artisanProfile.name = nameVal;
-  appState.data.artisanAuth.artisanProfile.craftCategory = craftVal;
-  appState.data.artisanAuth.artisanProfile.location = locVal;
+  const newProfile = {
+    id: generatedId,
+    name: nameVal || 'Artisan Partner',
+    craftCategory: craftVal || 'Bamboo Craft',
+    location: locVal || 'India',
+    mobileNumber: appState.data.onboardingDraft?.mobileNumber || '9876543210'
+  };
+
+  appState.data.artisanAuth.artisanProfile = newProfile;
   appState.data.artisanAuth.isRegistered = true;
+
+  if (!appState.data.savedArtisans) appState.data.savedArtisans = [];
+  appState.data.savedArtisans.push(newProfile);
 
   if (appState.data.onboardingDraft) {
     appState.data.onboardingDraft.artisanId = generatedId;
+    appState.data.onboardingDraft.name = newProfile.name;
+    appState.data.onboardingDraft.craftCategory = newProfile.craftCategory;
+    appState.data.onboardingDraft.location = newProfile.location;
   }
 
   // Advance to CRAFTORA User ID display card
   appState.setArtisanScreen('artisan_id_card');
+};
+
+window.loginAsReturningArtisan = () => {
+  appState.loginReturningArtisan();
 };
 
 window.enterArtisanDashboard = () => {
