@@ -16,9 +16,13 @@ export function renderArtisanView(screen) {
 
   switch (screen) {
     case 'onboarding':
-      return renderScreen2_OnboardingChoice();
+      return renderScreen2_MobileInput();
+    case 'onboarding_otp':
+      return renderScreen2_DemoOTP();
     case 'profile_step1':
       return renderScreen3_ProfileSetup();
+    case 'artisan_id_card':
+      return renderScreen3_ArtisanIdCard();
     case 'welcome':
       return renderScreen4_Welcome();
     case 'add_product':
@@ -47,68 +51,121 @@ export function renderArtisanView(screen) {
   }
 }
 
-// Screen 2 — Artisan Entry / Onboarding Choice
-function renderScreen2_OnboardingChoice() {
+// Screen 2 — Artisan Mobile Registration
+function renderScreen2_MobileInput() {
+  const draft = appState.data.onboardingDraft || {};
   return `
     <div style="padding: 24px 20px; text-align: center;">
-      <h2 style="font-size: 20px; margin-bottom: 4px;">Welcome, Artisan 👋</h2>
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        ARTISAN ONBOARDING · STEP 1 OF 3
+      </div>
+      <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Welcome, Artisan 👋</h2>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
-        Let's bring your craft online.
+        Enter your mobile number to register your craft business on CRAFTORA.
       </p>
 
-      <div class="craft-card" style="margin-bottom: 24px; padding: 24px; background: var(--bg-elevated);">
-        <div style="color: var(--copper); margin-bottom: 10px;">${renderIcon('palette', '', 48)}</div>
-        <div style="font-size: 14px; font-weight: 700; color: var(--copper);">ARTISAN CRAFT ILLUSTRATION</div>
+      <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
+        <div class="form-group">
+          <label class="form-label">Mobile Number</label>
+          <div style="display: flex; gap: 8px;">
+            <span style="display: flex; align-items: center; padding: 10px 12px; background: var(--bg-elevated); border: 1.5px solid var(--border-light); border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; color: var(--text-primary);">
+              🇮🇳 +91
+            </span>
+            <input type="tel" id="artisan_mobile_input" class="form-input" maxlength="10"
+                   value="${draft.mobileNumber || '9876543210'}" placeholder="10-digit number" style="font-size: 15px; letter-spacing: 0.05em; font-weight: 600;">
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 6px;">
+          ${renderIcon('shield', '', 14)} Secure registration. Demo OTP (1234) provided.
+        </div>
+
+        <button class="btn-primary" onclick="window.submitArtisanMobile()">
+          Send Demo OTP ${renderIcon('arrowRight', '', 16)}
+        </button>
       </div>
 
-      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 14px; letter-spacing: 0.05em;">
-        How would you like to continue?
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 320px; margin: 0 auto 20px;">
+      <div style="display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto;">
         <button class="btn-voice" onclick="window.openVoiceAssistantProfile()">
-          ${renderIcon('mic', '', 18)} Continue with Voice ${renderIcon('arrowRight', '', 16)}
+          ${renderIcon('mic', '', 16)} Or register using Voice Assistant
         </button>
 
-        <button class="btn-primary" onclick="window.navArtisan('profile_step1')">
-          ${renderIcon('user', '', 18)} Continue with Mobile ${renderIcon('arrowRight', '', 16)}
-        </button>
-      </div>
-
-      <div style="font-size: 12px; color: var(--text-muted);">
-        Already registered? <a href="#" onclick="window.toggleArtisanAuthMode(); return false;" style="color: var(--copper); text-decoration: underline;">Sign In Directly</a>
-      </div>
-
-      <div style="margin-top: 30px; font-size: 11px; color: var(--text-copper); font-weight: 700; letter-spacing: 0.05em;">
-        Simple • Voice-first • Multilingual • Easy
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+          Already registered? <a href="#" onclick="window.toggleArtisanAuthMode(); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Sign In to Dashboard</a>
+        </div>
       </div>
     </div>
   `;
 }
 
-// Screen 3 — Profile Setup Step 1
-function renderScreen3_ProfileSetup() {
+// Screen 2B — Demo OTP Verification
+function renderScreen2_DemoOTP() {
+  const draft = appState.data.onboardingDraft || {};
+  const phone = draft.mobileNumber || '9876543210';
+
   return `
-    <div style="padding: 24px 20px;">
-      <h2 style="font-size: 20px; margin-bottom: 4px;">Create your profile</h2>
+    <div style="padding: 24px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        ARTISAN ONBOARDING · STEP 2 OF 3
+      </div>
+      <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Verify Mobile Number</h2>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
-        Let's get to know your craft. You can type or use your voice.
+        Enter the 4-digit demo OTP sent to <strong>+91 ${phone}</strong>
       </p>
 
-      <div style="text-align: center; margin-bottom: 20px;">
-        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg-elevated); border: 2px dashed var(--text-copper); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: var(--copper); cursor: pointer;" onclick="alert('Profile photo selected!')">
+      <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
+        <div id="artisan_otp_error" style="display:none; padding:8px 10px; background:var(--danger-pale); border:1px solid var(--danger); border-radius:var(--radius-sm); color:var(--danger); font-size:12px; margin-bottom:12px;"></div>
+
+        <div class="form-group" style="text-align: center;">
+          <label class="form-label" style="text-align: center;">Enter 4-Digit OTP</label>
+          <input type="text" id="artisan_otp_input" class="form-input" maxlength="4" value="1234"
+                 style="text-align: center; font-size: 24px; font-weight: 800; letter-spacing: 0.4em; width: 180px; margin: 0 auto; color: var(--green);">
+        </div>
+
+        <div class="notice-box" style="margin-bottom: 16px; font-size: 12px; text-align: left;">
+          ${renderIcon('sparkles', '', 14)}
+          <div><strong>Demo Mode Active:</strong><br>Use OTP <strong>1234</strong> to simulate instant verification.</div>
+        </div>
+
+        <button class="btn-primary" onclick="window.verifyArtisanOTP()">
+          Verify & Continue ${renderIcon('arrowRight', '', 16)}
+        </button>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-muted);">
+        Didn't receive code? <a href="#" onclick="alert('Demo OTP is 1234'); return false;" style="color: var(--copper); font-weight: 600;">Resend OTP</a> • <a href="#" onclick="window.navArtisan('onboarding'); return false;" style="color: var(--text-secondary);">Change Number</a>
+      </div>
+    </div>
+  `;
+}
+
+// Screen 3 — Profile Setup Step (No Aadhaar collection)
+function renderScreen3_ProfileSetup() {
+  const draft = appState.data.onboardingDraft || {};
+  return `
+    <div style="padding: 24px 20px;">
+      <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
+        ARTISAN ONBOARDING · STEP 3 OF 3
+      </div>
+      <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Setup Artisan Profile</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px;">
+        Tell us about your craft. You can type or use your voice in English or Hindi.
+      </p>
+
+      <div style="text-align: center; margin-bottom: 18px;">
+        <div style="width: 76px; height: 76px; border-radius: 50%; background: var(--bg-elevated); border: 2px dashed var(--text-copper); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: var(--copper); cursor: pointer;" onclick="alert('Profile photo selected!')">
           ${renderIcon('camera', '', 28)}
         </div>
-        <div style="font-size: 12px; color: var(--copper); font-weight: 600;">Add Photo</div>
+        <div style="font-size: 12px; color: var(--copper); font-weight: 600;">Add Workshop Photo (Optional)</div>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Your Name</label>
-        <input type="text" id="artisan_name_input" class="form-input" value="Ramesh Kumar" placeholder="Enter your name">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="artisan_name_input" class="form-input" value="${draft.name || 'Ramesh Kumar'}" placeholder="e.g. Ramesh Kumar">
       </div>
 
       <div class="form-group">
-        <label class="form-label">Your Craft</label>
+        <label class="form-label">Primary Craft Category</label>
         <select id="artisan_craft_select" class="form-select">
           <option value="Bamboo Craft" selected>Bamboo Craft (Assam)</option>
           <option value="Madhubani Painting">Madhubani Painting (Bihar)</option>
@@ -120,17 +177,85 @@ function renderScreen3_ProfileSetup() {
       </div>
 
       <div class="form-group">
-        <label class="form-label">Location</label>
-        <input type="text" id="artisan_location_input" class="form-input" value="Assam, India" placeholder="State / District">
+        <label class="form-label">Workshop Location</label>
+        <input type="text" id="artisan_location_input" class="form-input" value="${draft.location || 'Assam, India'}" placeholder="State / District">
       </div>
 
       <button class="btn-voice" style="margin-bottom: 16px;" onclick="window.openVoiceAssistantProfile()">
-        ${renderIcon('mic', '', 18)} Tell us by voice | Speak in your language
+        ${renderIcon('mic', '', 18)} Speak by Voice (English / हिन्दी)
       </button>
 
+      <!-- Explicit Aadhaar-free compliance note -->
+      <div class="disclaimer-box" style="margin-bottom: 16px;">
+        <span>${renderIcon('shield', '', 15)}</span>
+        <div>
+          <strong>Document-Free Digital Verification:</strong><br>
+          CRAFTORA uses OTP authentication and peer review. No physical Aadhaar card images or biometric files are collected or stored.
+        </div>
+      </div>
+
       <button class="btn-primary" onclick="window.completeProfileSetup()">
-        Continue ${renderIcon('arrowRight', '', 16)} (1 / 2)
+        Generate CRAFTORA Identity ${renderIcon('arrowRight', '', 16)}
       </button>
+    </div>
+  `;
+}
+
+// Screen 3B — CRAFTORA User ID Issued Card
+function renderScreen3_ArtisanIdCard() {
+  const profile = appState.data.artisanAuth.artisanProfile || {};
+  const artisanId = profile.id || 'CRF-ART-001284';
+
+  return `
+    <div style="padding: 24px 20px; text-align: center;">
+      <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--success-pale); color: var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+        ${renderIcon('check', '', 28)}
+      </div>
+      <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 4px;">Registration Complete! 🎉</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+        Your official CRAFTORA Artisan Identity Card has been created.
+      </p>
+
+      <!-- Digital Identity Card -->
+      <div class="craft-card craft-card-glow"
+           style="text-align: left; max-width: 340px; margin: 0 auto 20px; border-top: 4px solid var(--green); padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+          <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; color: var(--green);">
+            CRAFTORA ARTISAN PASS
+          </div>
+          <span class="badge-pill badge-emerald">✓ Verified Identity</span>
+        </div>
+
+        <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 14px;">
+          <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--bg-elevated); border: 2px solid var(--border-green); display: flex; align-items: center; justify-content: center; color: var(--green);">
+            ${renderIcon('user', '', 28)}
+          </div>
+          <div>
+            <div style="font-size: 16px; font-weight: 800; color: var(--text-primary);">${profile.name || 'Ramesh Kumar'}</div>
+            <div style="font-size: 12px; color: var(--copper); font-weight: 600;">${profile.craftCategory || 'Bamboo Craft'}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${profile.location || 'Assam, India'}</div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-elevated); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px;">
+          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">
+            Permanent CRAFTORA User ID:
+          </div>
+          <div style="font-family: monospace; font-size: 16px; font-weight: 800; color: var(--green); margin-top: 2px;">
+            ${artisanId}
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+          This ID links all your catalogue items to digital product passports and provenance records.
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto;">
+        <button class="btn-primary" onclick="window.enterArtisanDashboard()">
+          Go to Artisan Dashboard ${renderIcon('arrowRight', '', 16)}
+        </button>
+      </div>
     </div>
   `;
 }
@@ -684,16 +809,58 @@ if (!window.openVoiceAssistantProduct) {
   };
 }
 
-window.completeProfileSetup = () => {
-  const nameVal = document.getElementById('artisan_name_input')?.value || 'Ramesh Kumar';
-  const craftVal = document.getElementById('artisan_craft_select')?.value || 'Bamboo Craft';
-  const locVal = document.getElementById('artisan_location_input')?.value || 'Assam, India';
+window.submitArtisanMobile = () => {
+  const phone = document.getElementById('artisan_mobile_input')?.value?.trim() || '9876543210';
+  if (!appState.data.onboardingDraft) appState.data.onboardingDraft = {};
+  appState.data.onboardingDraft.mobileNumber = phone;
+  appState.setArtisanScreen('onboarding_otp');
+};
 
+window.verifyArtisanOTP = () => {
+  const otp = document.getElementById('artisan_otp_input')?.value?.trim() || '1234';
+  const errEl = document.getElementById('artisan_otp_error');
+  if (otp.length !== 4) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.textContent = 'Please enter a 4-digit OTP (Demo OTP: 1234)';
+    } else {
+      alert('Please enter a 4-digit OTP (Demo OTP: 1234)');
+    }
+    return;
+  }
+  if (!appState.data.onboardingDraft) appState.data.onboardingDraft = {};
+  appState.data.onboardingDraft.otp = otp;
+  appState.setArtisanScreen('profile_step1');
+};
+
+window.completeProfileSetup = () => {
+  const nameVal = document.getElementById('artisan_name_input')?.value?.trim() || 'Ramesh Kumar';
+  const craftVal = document.getElementById('artisan_craft_select')?.value || 'Bamboo Craft';
+  const locVal = document.getElementById('artisan_location_input')?.value?.trim() || 'Assam, India';
+
+  // Generate unique CRAFTORA Artisan User ID (e.g. CRF-ART-784912)
+  const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+  const generatedId = `CRF-ART-${randomSuffix}`;
+
+  if (!appState.data.artisanAuth.artisanProfile) {
+    appState.data.artisanAuth.artisanProfile = {};
+  }
+  appState.data.artisanAuth.artisanProfile.id = generatedId;
   appState.data.artisanAuth.artisanProfile.name = nameVal;
   appState.data.artisanAuth.artisanProfile.craftCategory = craftVal;
   appState.data.artisanAuth.artisanProfile.location = locVal;
   appState.data.artisanAuth.isRegistered = true;
-  appState.setArtisanScreen('welcome');
+
+  if (appState.data.onboardingDraft) {
+    appState.data.onboardingDraft.artisanId = generatedId;
+  }
+
+  // Advance to CRAFTORA User ID display card
+  appState.setArtisanScreen('artisan_id_card');
+};
+
+window.enterArtisanDashboard = () => {
+  appState.setArtisanScreen('dashboard');
 };
 
 window.triggerProductImageUpload = () => {

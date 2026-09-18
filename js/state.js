@@ -13,6 +13,10 @@ class AppStateStore {
   }
 
   loadState() {
+    if (typeof localStorage === 'undefined') {
+      this.initDefaultState();
+      return;
+    }
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
@@ -47,8 +51,16 @@ class AppStateStore {
         mobileNumber: '+91 9876543210'
       },
       adminAuth: {
-        isLoggedIn: true,
-        adminId: 'ADMIN-IND-902'
+        isLoggedIn: false, // Default unauthenticated; demo login requires admin / admin123
+        adminId: 'admin'
+      },
+      onboardingDraft: {
+        mobileNumber: '9876543210',
+        otp: '',
+        name: 'Ramesh Kumar',
+        craftCategory: 'Bamboo Craft',
+        location: 'Assam, India',
+        artisanId: ''
       },
 
       // Core Data Collections
@@ -71,7 +83,9 @@ class AppStateStore {
   }
 
   saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+    }
   }
 
   subscribe(listener) {
@@ -89,6 +103,11 @@ class AppStateStore {
   // State Mutators
   setRole(role) {
     this.data.currentRole = role;
+    if (role === 'admin') {
+      if (!this.data.adminAuth?.isLoggedIn) {
+        this.data.activeAdminScreen = 'login';
+      }
+    }
     this.notify();
   }
 
@@ -112,8 +131,33 @@ class AppStateStore {
   }
 
   setAdminScreen(screen, params = {}) {
-    this.data.activeAdminScreen = screen;
+    if (this.data.currentRole !== 'admin') {
+      this.data.currentRole = 'admin';
+    }
+    if (!this.data.adminAuth?.isLoggedIn) {
+      this.data.activeAdminScreen = 'login';
+    } else {
+      this.data.activeAdminScreen = screen;
+    }
     if (params.target) this.data.adminReviewingTarget = params.target;
+    this.notify();
+  }
+
+  loginAdmin(username, password) {
+    if (username && username.trim() === 'admin' && password === 'admin123') {
+      this.data.adminAuth.isLoggedIn = true;
+      this.data.adminAuth.adminId = 'admin';
+      this.data.currentRole = 'admin';
+      this.data.activeAdminScreen = 'dashboard';
+      this.notify();
+      return { success: true };
+    }
+    return { success: false, message: 'Invalid credentials. Demo: admin / admin123' };
+  }
+
+  logoutAdmin() {
+    this.data.adminAuth.isLoggedIn = false;
+    this.data.activeAdminScreen = 'login';
     this.notify();
   }
 
@@ -204,7 +248,9 @@ class AppStateStore {
   }
 
   resetAllData() {
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEY);
+    }
     this.initDefaultState();
     this.notify();
   }

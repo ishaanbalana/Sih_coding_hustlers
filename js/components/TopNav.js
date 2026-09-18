@@ -34,6 +34,11 @@ export function renderTopNav(showBack = false) {
       </div>
 
       <div style="display: flex; align-items: center; gap: 8px;">
+        ${role === 'admin' && state.adminAuth?.isLoggedIn ? `
+          <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px; height: auto; border-radius: var(--radius-xs);" onclick="window.logoutAdmin()" title="Sign Out">
+            Sign Out
+          </button>
+        ` : ''}
         <button class="lang-selector" onclick="window.toggleLanguage()" aria-label="Toggle language">
           ${renderIcon('globe', '', 14)}
           <span>${lang === 'EN' ? 'EN' : 'हिं'}</span>
@@ -60,8 +65,10 @@ window.historyBack = () => {
     const current = state.activeArtisanScreen;
     // Simple back map
     const backMap = {
-      profile_step1: 'onboarding',
-      welcome: 'profile_step1',
+      onboarding_otp: 'onboarding',
+      profile_step1: 'onboarding_otp',
+      artisan_id_card: 'profile_step1',
+      welcome: 'artisan_id_card',
       add_product: 'dashboard',
       ai_analysis: 'add_product',
       review_product: 'ai_analysis',

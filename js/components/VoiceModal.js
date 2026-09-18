@@ -13,6 +13,7 @@ let _voiceState = 'idle'; // idle | listening | processing | done | error | unav
 let _voiceTranscript = '';
 let _voiceContext = null; // 'profile' | 'product' | null
 let _onTranscriptExtracted = null;
+let _selectedVoiceLang = 'en-IN'; // Default: en-IN (English). Toggleable to hi-IN (Hindi)
 
 /* ── Check browser support ───────────────────────────────────────── */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -22,19 +23,17 @@ export function renderVoiceModal() {
   const state = appState.data;
   if (!state.isVoiceModalOpen) return '';
 
-  const lang = state.language;
-  const langCode = lang === 'HI' ? 'hi-IN' : 'en-IN';
-  const langLabel = lang === 'HI' ? 'हिन्दी (Hindi)' : 'English (India)';
-
+  const isHindi = _selectedVoiceLang === 'hi-IN';
+  const langLabel = isHindi ? 'हिन्दी (Hindi - hi-IN)' : 'English (India - en-IN)';
   const isSRAvailable = SR !== null;
 
   const stateLabel = {
-    idle:        lang === 'HI' ? 'बोलने के लिए तैयार' : 'Ready to listen',
-    listening:   lang === 'HI' ? 'सुन रहा हूँ...' : 'Listening...',
-    processing:  lang === 'HI' ? 'प्रसंस्करण हो रहा है...' : 'Processing...',
-    done:        lang === 'HI' ? 'आवाज़ कैप्चर हो गई' : 'Speech captured',
-    error:       'Error — please try again',
-    unavailable: 'Voice input not supported'
+    idle:        isHindi ? 'बोलने के लिए तैयार' : 'Ready to listen',
+    listening:   isHindi ? 'सुन रहा हूँ...' : 'Listening — speak clearly...',
+    processing:  isHindi ? 'प्रसंस्करण हो रहा है...' : 'Processing speech...',
+    done:        isHindi ? 'आवाज़ रिकॉर्ड हो गई' : 'Speech captured successfully',
+    error:       'Microphone error — please retry',
+    unavailable: 'Speech recognition not supported in browser'
   }[_voiceState] || 'Ready';
 
   const isListening = _voiceState === 'listening';
@@ -43,27 +42,52 @@ export function renderVoiceModal() {
     <div class="voice-modal-overlay">
       <div class="voice-modal-card">
 
-        <!-- Mic orb -->
-        <div class="voice-pulse-circle ${isListening ? 'listening' : ''}"
-             style="cursor:pointer;" onclick="window.toggleVoiceListening()">
-          ${renderIcon('mic', '', 30)}
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div style="font-family:var(--font-heading); font-size:16px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+            ${renderIcon('mic', '', 18)} CRAFTORA Voice Input
+          </div>
+          <button onclick="window.closeVoiceModal()"
+                  style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer; padding:2px 6px;">✕</button>
         </div>
 
-        <h3 style="margin-bottom:4px; font-size:17px; color:var(--text-primary);">
-          ${isListening
-            ? (lang === 'HI' ? 'बोलते रहें...' : 'Listening — speak now')
-            : (lang === 'HI' ? 'CRAFTORA वॉइस असिस्टेंट' : 'CRAFTORA Voice Assistant')}
-        </h3>
+        <!-- Visible Language Selector (Default: English en-IN, with Hindi hi-IN) -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;">
+            Choose Input Language:
+          </div>
+          <div style="display:flex; justify-content:center; gap:8px;">
+            <button type="button"
+                    class="btn-secondary"
+                    style="padding:6px 14px; font-size:12px; border-radius:var(--radius-full); transition:var(--transition-fast); ${!isHindi ? 'background:var(--green); color:white; border-color:var(--green); font-weight:700;' : 'color:var(--text-secondary);'}"
+                    onclick="window.setVoiceLanguage('en-IN')">
+              🇬🇧 English (en-IN)
+            </button>
+            <button type="button"
+                    class="btn-secondary"
+                    style="padding:6px 14px; font-size:12px; border-radius:var(--radius-full); transition:var(--transition-fast); ${isHindi ? 'background:var(--green); color:white; border-color:var(--green); font-weight:700;' : 'color:var(--text-secondary);'}"
+                    onclick="window.setVoiceLanguage('hi-IN')">
+              🇮🇳 हिन्दी (hi-IN)
+            </button>
+          </div>
+        </div>
 
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">
-          ${isSRAvailable
-            ? `Language: <strong>${langLabel}</strong> • Tap mic to start/stop`
-            : 'Voice input is not supported in this browser. Please type instead.'}
-        </p>
+        <!-- Mic Orb -->
+        <div class="voice-pulse-circle ${isListening ? 'listening' : ''}"
+             style="cursor:pointer; margin: 0 auto 12px;" onclick="window.toggleVoiceListening()"
+             title="${isListening ? 'Click to stop' : 'Click to speak'}">
+          ${renderIcon('mic', '', 32)}
+        </div>
+
+        <div style="font-size:13px; font-weight:600; color: ${isListening ? 'var(--terracotta)' : 'var(--text-primary)'}; margin-bottom:4px;">
+          ${isListening
+            ? (isHindi ? 'सुन रहा हूँ — बोलिए...' : 'Listening — please speak now')
+            : (isHindi ? 'माइक दबाकर बोलना शुरू करें' : 'Tap microphone to start speaking')}
+        </div>
 
         <!-- Status indicator -->
         <div style="display:flex; align-items:center; justify-content:center; gap:8px;
-                    margin-bottom:16px; font-size:12px; font-weight:600;
+                    margin-bottom:14px; font-size:12px; font-weight:600;
                     color: ${isListening ? 'var(--terracotta)' : 'var(--text-muted)'};">
           ${isListening
             ? `<span style="display:inline-block; width:8px; height:8px; border-radius:50%;
@@ -73,74 +97,76 @@ export function renderVoiceModal() {
           ${stateLabel}
         </div>
 
-        <!-- Transcript area -->
+        <!-- Live Transcript Area -->
         <div style="background:var(--bg-input); border:1.5px solid var(--border-light);
-                    border-radius:var(--radius-md); padding:14px; margin-bottom:18px;
-                    text-align:left; min-height:70px;">
+                    border-radius:var(--radius-md); padding:12px; margin-bottom:14px;
+                    text-align:left;">
           <div style="font-size:10px; font-weight:700; color:var(--text-muted);
                       text-transform:uppercase; letter-spacing:0.07em; margin-bottom:6px;
-                      display:flex; align-items:center; gap:5px;">
-            ${renderIcon('sparkles', '', 12)} Transcript
+                      display:flex; align-items:center; justify-content:space-between;">
+            <span style="display:flex; align-items:center; gap:5px;">
+              ${renderIcon('sparkles', '', 12)} Spoken Transcript (${_selectedVoiceLang})
+            </span>
+            ${_voiceTranscript ? `<span style="color:var(--green); font-size:10px;">✓ Captured</span>` : ''}
           </div>
-          <div id="voice-transcript-display"
-               style="font-size:14px; color:var(--text-primary); line-height:1.6;
-                      font-style:${_voiceTranscript ? 'normal' : 'italic'};">
-            ${_voiceTranscript || (lang === 'HI'
-              ? 'यहाँ आपकी आवाज़ दिखेगी...'
-              : 'Your speech will appear here...')}
-          </div>
+          <textarea id="voice-transcript-display"
+                    rows="3"
+                    style="width:100%; border:none; background:transparent; resize:none;
+                           font-size:13px; color:var(--text-primary); line-height:1.5; font-family:var(--font-body); outline:none;"
+                    placeholder="${isHindi ? 'यहाँ आपका बोला हुआ शब्द दिखेगा...' : 'Your live speech transcript will appear here...'}"
+                    oninput="_voiceTranscript = this.value">${_voiceTranscript || ''}</textarea>
         </div>
 
-        <!-- Instruction hint -->
+        <!-- Hint -->
         ${_voiceContext === 'profile' ? `
           <div class="notice-box" style="text-align:left; margin-bottom:14px;">
             ${renderIcon('sparkles', '', 12)}
             <div style="font-size:11px;">
-              ${lang === 'HI'
-                ? 'उदाहरण: "मेरा नाम रमेश है, मैं असम से हूँ, मैं बाँस की टोकरी बनाता हूँ।"'
-                : 'Example: "My name is Ramesh Kumar, I make bamboo baskets in Assam."'}
+              ${isHindi
+                ? 'उदाहरण बोलें: "मेरा नाम रमेश है, मैं असम से हूँ, मैं बाँस की टोकरी बनाता हूँ।"'
+                : 'Say: "My name is Ramesh Kumar, I am from Assam, I make bamboo craft."'}
             </div>
           </div>
         ` : _voiceContext === 'product' ? `
           <div class="notice-box" style="text-align:left; margin-bottom:14px;">
             ${renderIcon('sparkles', '', 12)}
             <div style="font-size:11px;">
-              ${lang === 'HI'
-                ? 'उदाहरण: "यह बाँस की हस्तनिर्मित टोकरी है, प्राकृतिक बाँस से बनी।"'
-                : 'Example: "This is a handmade bamboo basket made from natural bamboo."'}
+              ${isHindi
+                ? 'उदाहरण बोलें: "यह बाँस की हस्तनिर्मित टोकरी है, प्राकृतिक बाँस से बनी।"'
+                : 'Say: "Handmade decorative bamboo basket woven from natural Assam bamboo."'}
             </div>
           </div>
         ` : ''}
 
         <!-- Action buttons -->
-        <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; flex-direction:column; gap:8px;">
           ${isSRAvailable ? `
             <button class="btn-voice" id="voice-listen-btn"
                     onclick="window.toggleVoiceListening()">
               ${renderIcon('mic', '', 16)}
               ${isListening
-                ? (lang === 'HI' ? 'रोकें' : 'Stop Listening')
-                : (lang === 'HI' ? 'बोलना शुरू करें' : 'Start Listening')}
+                ? (isHindi ? 'रिकॉर्डिंग रोकें' : 'Stop Listening')
+                : (isHindi ? 'बोलना शुरू करें' : 'Start Speaking')}
             </button>
 
-            ${_voiceTranscript && _voiceState === 'done' ? `
+            ${_voiceTranscript ? `
               <button class="btn-primary" onclick="window.applyVoiceTranscript()">
                 ${renderIcon('check', '', 16)}
-                ${lang === 'HI' ? 'इसे लागू करें' : 'Apply This Transcript'}
+                ${isHindi ? 'यह जानकारी लागू करें' : 'Apply This Transcript'}
               </button>
             ` : ''}
           ` : `
             <div class="disclaimer-box" style="text-align:left;">
               ${renderIcon('alertCircle', '', 16)}
               <div>
-                <strong>Voice input is not supported in this browser.</strong><br>
-                Please use Chrome or Edge on desktop/Android. You can type your information instead.
+                <strong>Web Speech API is not supported in this browser.</strong><br>
+                Please use Chrome or Edge. You can also type your details directly.
               </div>
             </div>
           `}
 
           <button class="btn-secondary" onclick="window.closeVoiceModal()">
-            ${_voiceTranscript ? 'Done / Close' : 'Cancel'}
+            Cancel / Close
           </button>
         </div>
 
@@ -148,6 +174,19 @@ export function renderVoiceModal() {
     </div>
   `;
 }
+
+/* ── Switch Language ─────────────────────────────────────────────── */
+window.setVoiceLanguage = (langCode) => {
+  _selectedVoiceLang = langCode;
+  if (_voiceState === 'listening' && _recognition) {
+    try {
+      _recognition.stop();
+    } catch(e) {}
+    setTimeout(() => _startRecognition(), 200);
+  } else {
+    appState.notify();
+  }
+};
 
 /* ── Toggle listening ────────────────────────────────────────────── */
 window.toggleVoiceListening = () => {
@@ -170,69 +209,65 @@ function _startRecognition() {
     try { _recognition.stop(); } catch(e) {}
   }
 
-  const lang = appState.data.language === 'HI' ? 'hi-IN' : 'en-IN';
-
-  _recognition = new SR();
-  _recognition.lang = lang;
-  _recognition.interimResults = true;
-  _recognition.continuous = false;
-  _recognition.maxAlternatives = 1;
-
-  _recognition.onstart = () => {
-    _voiceState = 'listening';
-    _voiceTranscript = '';
-    appState.notify();
-  };
-
-  _recognition.onresult = (event) => {
-    let interim = '';
-    let final = '';
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      const result = event.results[i];
-      if (result.isFinal) {
-        final += result[0].transcript;
-      } else {
-        interim += result[0].transcript;
-      }
-    }
-
-    // Update the transcript display in real-time without full re-render
-    const displayEl = document.getElementById('voice-transcript-display');
-    const combined = (final || interim).trim();
-    _voiceTranscript = combined;
-
-    if (displayEl) {
-      displayEl.textContent = combined || '...';
-      displayEl.style.fontStyle = 'normal';
-    }
-  };
-
-  _recognition.onerror = (event) => {
-    const err = event.error;
-    if (err === 'not-allowed') {
-      _voiceState = 'error';
-      _voiceTranscript = '⚠ Microphone permission denied. Please allow mic access and try again.';
-    } else if (err === 'no-speech') {
-      _voiceState = 'error';
-      _voiceTranscript = 'No speech detected. Please speak louder or try again.';
-    } else if (err === 'network') {
-      _voiceState = 'error';
-      _voiceTranscript = 'Network error — voice recognition requires internet access.';
-    } else {
-      _voiceState = 'error';
-      _voiceTranscript = `Error: ${err}. Please try again.`;
-    }
-    appState.notify();
-  };
-
-  _recognition.onend = () => {
-    if (_voiceState === 'listening') {
-      _voiceState = _voiceTranscript ? 'done' : 'idle';
-    }
-    appState.notify();
-  };
-
   try {
+    _recognition = new SR();
+    _recognition.lang = _selectedVoiceLang || 'en-IN';
+    _recognition.interimResults = true;
+    _recognition.continuous = true;
+    _recognition.maxAlternatives = 1;
+
+    _recognition.onstart = () => {
+      _voiceState = 'listening';
+      appState.notify();
+    };
+
+    _recognition.onresult = (event) => {
+      let interim = '';
+      let final = '';
+      for (let i = 0; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          final += result[0].transcript + ' ';
+        } else {
+          interim += result[0].transcript;
+        }
+      }
+
+      const combined = (final + interim).trim();
+      if (combined) {
+        _voiceTranscript = combined;
+      }
+
+      const displayEl = document.getElementById('voice-transcript-display');
+      if (displayEl) {
+        displayEl.value = _voiceTranscript;
+      }
+    };
+
+    _recognition.onerror = (event) => {
+      const err = event.error;
+      if (err === 'not-allowed') {
+        _voiceState = 'error';
+        _voiceTranscript = 'Microphone permission denied. Please allow microphone access in your browser settings.';
+      } else if (err === 'no-speech') {
+        // Just keep listening or wait
+      } else if (err === 'network') {
+        _voiceState = 'error';
+        _voiceTranscript = 'Network connection needed for speech-to-text service.';
+      } else {
+        _voiceState = 'error';
+        _voiceTranscript = `Speech recognition error: ${err}`;
+      }
+      appState.notify();
+    };
+
+    _recognition.onend = () => {
+      if (_voiceState === 'listening') {
+        _voiceState = _voiceTranscript ? 'done' : 'idle';
+      }
+      appState.notify();
+    };
+
     _recognition.start();
   } catch (e) {
     _voiceState = 'error';
@@ -252,7 +287,9 @@ function _stopRecognition() {
 
 /* ── Apply transcript to calling context ─────────────────────────── */
 window.applyVoiceTranscript = () => {
-  if (!_voiceTranscript) return;
+  const currentText = document.getElementById('voice-transcript-display')?.value?.trim() || _voiceTranscript?.trim();
+  if (!currentText) return;
+  _voiceTranscript = currentText;
 
   if (_voiceContext === 'profile') {
     _applyToProfileFields(_voiceTranscript);

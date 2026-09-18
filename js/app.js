@@ -37,7 +37,11 @@ function renderApp() {
   } else if (role === 'buyer') {
     mainContent = renderBuyerView(state.activeBuyerScreen);
   } else if (role === 'admin') {
-    mainContent = renderAdminView(state.activeAdminScreen);
+    if (!state.adminAuth?.isLoggedIn) {
+      mainContent = renderAdminView('login');
+    } else {
+      mainContent = renderAdminView(state.activeAdminScreen);
+    }
   }
 
   const isWideMode = (role === 'admin') || (role === 'artisan' && state.activeArtisanScreen === 'dashboard');

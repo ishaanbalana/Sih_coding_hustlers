@@ -67,4 +67,15 @@ export function renderLandingView() {
 
 window.selectRoleLanding = (role) => {
   appState.setRole(role);
+  if (role === 'artisan') {
+    if (!appState.data.artisanAuth?.isRegistered) {
+      appState.setArtisanScreen('onboarding');
+    } else {
+      appState.setArtisanScreen('dashboard');
+    }
+  } else if (role === 'buyer') {
+    appState.setBuyerScreen('explore');
+  } else if (role === 'admin') {
+    appState.setAdminScreen(appState.data.adminAuth?.isLoggedIn ? 'dashboard' : 'login');
+  }
 };

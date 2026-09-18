@@ -58,6 +58,7 @@ export function renderBottomNav() {
   }
 
   if (role === 'admin') {
+    if (!state.adminAuth?.isLoggedIn) return '';
     const active = state.activeAdminScreen;
     return `
       <nav class="bottom-nav">

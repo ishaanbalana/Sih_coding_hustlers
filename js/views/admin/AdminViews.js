@@ -10,6 +10,11 @@ export function renderAdminView(screen) {
   const state = appState.data;
   const products = state.products;
 
+  // STRICT RULE: Only users with role === 'admin' and adminAuth.isLoggedIn === true can access admin routes
+  if (!state.adminAuth?.isLoggedIn) {
+    return renderScreenA1_AdminLogin();
+  }
+
   switch (screen) {
     case 'login':
       return renderScreenA1_AdminLogin();
@@ -36,7 +41,7 @@ function renderScreenA1_AdminLogin() {
       </div>
       <h2 style="font-size: 20px; margin-bottom: 2px;">CRAFTORA ADMIN</h2>
       <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.1em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 24px;">
-        VERIFICATION PORTAL
+        VERIFICATION PORTAL (DEMO AUTH)
       </div>
 
       <div class="craft-card" style="text-align: left; max-width: 340px; margin: 0 auto 20px;">
@@ -44,24 +49,36 @@ function renderScreenA1_AdminLogin() {
           ${renderIcon('shield', '', 16)} Authorized Admin Access
         </div>
 
+        <div id="admin_login_error" style="display:none; padding:10px 12px; background:var(--danger-pale); border:1px solid var(--danger); border-radius:var(--radius-sm); color:var(--danger); font-size:12px; margin-bottom:14px;"></div>
+
         <div class="form-group">
-          <label class="form-label">Admin ID</label>
-          <input type="text" class="form-input" value="ADMIN-IND-902">
+          <label class="form-label">Username</label>
+          <input type="text" id="admin_login_username" class="form-input" placeholder="admin" autocomplete="username">
         </div>
 
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" class="form-input" value="••••••••••••">
+          <input type="password" id="admin_login_password" class="form-input" placeholder="admin123" autocomplete="current-password">
         </div>
 
-        <button class="btn-primary" onclick="window.navAdmin('dashboard')">
-          Sign In ${renderIcon('arrowRight', '', 16)}
+        <button class="btn-primary" onclick="window.submitAdminLogin()">
+          Sign In as Admin ${renderIcon('arrowRight', '', 16)}
         </button>
+
+        <div style="margin-top: 14px; padding: 10px; background: var(--bg-elevated); border-radius: var(--radius-xs); font-size: 11px; color: var(--text-secondary);">
+          <strong>Demo Admin Credentials:</strong><br>
+          Username: <code style="font-weight:700; color:var(--text-primary);">admin</code><br>
+          Password: <code style="font-weight:700; color:var(--text-primary);">admin123</code>
+        </div>
       </div>
 
-      <div style="font-size: 11px; color: var(--text-muted);">
-        🔒 Authorized access only • CRAFTORA Verification System
+      <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px;">
+        🔒 Demo authentication only • Access restricted to ADMIN role.
       </div>
+
+      <button class="btn-secondary" style="max-width: 220px; margin: 0 auto; font-size: 12px; padding: 8px 14px;" onclick="window.exitAdminMode()">
+        ← Back to Artisan Portal
+      </button>
     </div>
   `;
 }
@@ -72,9 +89,14 @@ function renderScreenA2_AdminDashboard(state) {
 
   return `
     <div style="padding: 20px;">
-      <div style="margin-bottom: 16px;">
-        <h2 style="font-size: 20px; font-weight: 800;">Verification Dashboard</h2>
-        <div style="font-size: 13px; color: var(--text-secondary);">Monitor artisans, products & provenance records.</div>
+      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800;">Verification Dashboard</h2>
+          <div style="font-size: 13px; color: var(--text-secondary);">Logged in: <strong>${state.adminAuth?.adminId || 'admin'}</strong> (Demo Admin)</div>
+        </div>
+        <button class="btn-secondary" style="padding: 6px 12px; font-size: 11px; width: auto; display: flex; align-items: center; gap: 4px;" onclick="window.logoutAdmin()">
+          ${renderIcon('shield', '', 12)} Sign Out
+        </button>
       </div>
 
       <!-- Overview Metrics -->
@@ -330,4 +352,29 @@ window.submitAdminDecision = (productId, decision) => {
   appState.adminDecision(productId, decision, note);
   alert(`Verification decision [${decision === 'approve' ? 'Approved' : 'Changes Requested'}] recorded.`);
   appState.setAdminScreen('dashboard');
+};
+
+window.submitAdminLogin = () => {
+  const user = document.getElementById('admin_login_username')?.value?.trim() || '';
+  const pass = document.getElementById('admin_login_password')?.value || '';
+  const errEl = document.getElementById('admin_login_error');
+
+  const result = appState.loginAdmin(user, pass);
+  if (!result.success) {
+    if (errEl) {
+      errEl.style.display = 'block';
+      errEl.textContent = result.message;
+    } else {
+      alert(result.message);
+    }
+  }
+};
+
+window.logoutAdmin = () => {
+  appState.logoutAdmin();
+};
+
+window.exitAdminMode = () => {
+  appState.setRole('artisan');
+  appState.setArtisanScreen('dashboard');
 };

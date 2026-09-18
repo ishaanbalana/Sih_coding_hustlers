@@ -18,23 +18,27 @@ export function renderDemoControlBar(state) {
   return `
     <div class="demo-bar-floating">
       <button class="demo-toggle-btn" onclick="window.toggleDemoPopover()"
-              title="Hackathon demo controls — not part of product UI">
+              title="Developer testing mode — collapsible controls">
         ${renderIcon('sliders', '', 12)}
-        <span>Demo · ${currentRole.charAt(0).toUpperCase() + currentRole.slice(1)}</span>
+        <span>Demo Mode (Testing)</span>
         <span style="opacity:0.7; font-size:9px;">${isDemoPopoverOpen ? '▲' : '▼'}</span>
       </button>
 
       ${isDemoPopoverOpen ? `
         <div class="demo-popover">
           <div style="display:flex; align-items:center; justify-content:space-between;">
-            <div class="demo-popover-title">🛠 Hackathon Demo Controls</div>
+            <div class="demo-popover-title">🛠️ Dev Testing Panel (Demo Mode)</div>
             <button onclick="window.toggleDemoPopover()"
                     style="background:none; border:none; color:#6B7280; cursor:pointer;
                            font-size:15px; line-height:1; padding:2px 4px;">✕</button>
           </div>
 
-          <div style="font-size:10px; color:#6B7280; margin-top:-4px;">
-            Switch role to demonstrate different user perspectives
+          <div style="font-size:10px; color:#9CA3AF; margin-top:-4px; line-height:1.4;">
+            Developer-only testing tools. Not part of end-user UI.
+          </div>
+
+          <div style="font-size:10px; font-weight:700; color:#D1D5DB; text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">
+            Simulate Role:
           </div>
 
           <div class="demo-role-grid">
@@ -55,22 +59,29 @@ export function renderDemoControlBar(state) {
           ${currentRole === 'artisan' ? `
             <button class="demo-role-btn" style="width:100%;"
                     onclick="window.toggleArtisanAuthMode()">
-              ${isArtisanReg ? '↩ Show Onboarding Flow' : '→ Show Returning Artisan'}
+              ${isArtisanReg ? '↩ Test New Artisan (Onboarding)' : '→ Test Returning Artisan (Dashboard)'}
             </button>
           ` : ''}
 
           ${currentRole === 'buyer' ? `
             <button class="demo-role-btn" style="width:100%;"
                     onclick="window.toggleBuyerAuthMode()">
-              ${isBuyerReg ? '↩ Show Guest/New Buyer' : '→ Show Registered Buyer'}
+              ${isBuyerReg ? '↩ Test Guest Buyer (Browse/Scan)' : '→ Test Registered Buyer'}
+            </button>
+          ` : ''}
+
+          ${currentRole === 'admin' ? `
+            <button class="demo-role-btn" style="width:100%;"
+                    onclick="window.toggleAdminDemoAuth()">
+              ${state.adminAuth.isLoggedIn ? '↩ Lock Admin (Show Login)' : '→ Quick Demo Admin Login'}
             </button>
           ` : ''}
 
           <button onclick="window.resetDemoData()"
                   style="background:none; border:1px solid rgba(220,38,38,0.3); border-radius:6px;
                          color:#EF4444; font-size:11px; font-weight:600; padding:6px 10px;
-                         cursor:pointer; width:100%; text-align:center;">
-            🔄 Reset All Demo Data
+                         cursor:pointer; width:100%; text-align:center; margin-top:4px;">
+            🔄 Reset All Demo Data to Defaults
           </button>
         </div>
       ` : ''}
@@ -97,6 +108,15 @@ window.toggleArtisanAuthMode = () => {
 window.toggleBuyerAuthMode = () => {
   const current = appState.data.buyerAuth.isRegistered;
   appState.toggleBuyerAuthState(!current, !current ? false : true);
+  isDemoPopoverOpen = false;
+};
+
+window.toggleAdminDemoAuth = () => {
+  if (appState.data.adminAuth.isLoggedIn) {
+    appState.logoutAdmin();
+  } else {
+    appState.loginAdmin('admin', 'admin123');
+  }
   isDemoPopoverOpen = false;
 };
 
