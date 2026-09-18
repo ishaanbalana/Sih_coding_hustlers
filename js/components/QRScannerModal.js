@@ -112,8 +112,8 @@ window.processScannedQRCode = (text) => {
   const products = appState.data.products;
   let targetProduct = products.find(p => p.id.toUpperCase() === productId);
 
-  if (!targetProduct) {
-    // If not found by exact ID, fallback to first product or sample for demo
+  if (!targetProduct && !productId) {
+    // If no specific product ID was found in raw text, fallback to sample for general demo scans
     targetProduct = products[0] || INITIAL_PRODUCTS[0];
   }
 
@@ -122,8 +122,8 @@ window.processScannedQRCode = (text) => {
     if (navigator.vibrate) navigator.vibrate(80);
   } catch(e) {}
 
-  appState.data.scannedQRProduct = targetProduct;
-  appState.setBuyerScreen('scan_qr_result', { productId: targetProduct.id });
+  appState.data.scannedQRProduct = targetProduct || null;
+  appState.setBuyerScreen('scan_qr_result', { productId: targetProduct ? targetProduct.id : (productId || 'unknown') });
 };
 
 /* ── Start Real Camera Scanner via @zxing/browser ────────────────── */

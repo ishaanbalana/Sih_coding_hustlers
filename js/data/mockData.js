@@ -1,6 +1,6 @@
 /* ==========================================================================
    CRAFTORA - Authentic Demo Data Structure (Indian Regional Crafts)
-   Strict Compliance: No fake blockchain hashes. Explicit demo labeling.
+   Strict Compliance: Exactly 3 Demo Artisans, Exactly 8 Demo Products
    ========================================================================== */
 
 export const INDIAN_CRAFT_CATEGORIES = [
@@ -18,125 +18,60 @@ export const INITIAL_ARTISANS = [
     name: "Ramesh Kumar",
     craftCategory: "Bamboo Craft",
     location: "Assam, India",
+    mobileNumber: "9876543210",
+    rating: 4.8,
+    ratingCount: 24,
     bio: "Ramesh is a traditional bamboo artisan from Assam. His craft reflects local weaving techniques passed through generations.",
     photoUrl: "assets/artisan_ramesh.png",
     isVerified: true,
     registeredAt: "17 Sep 2026",
     craftExperience: "Traditional Handcrafted Bamboo Work",
-    productCount: 2,
-    passportCount: 2
+    productCount: 5,
+    passportCount: 5,
+    productsSold: 18,
+    totalEarnings: 18650,
+    ordersCompleted: 14
   },
   {
     id: "CRF-ART-001285",
-    name: "Sita Devi",
+    name: "Meera Devi",
     craftCategory: "Madhubani Painting",
     location: "Bihar, India",
-    bio: "Sita Devi practices authentic Mithila and Madhubani painting techniques using natural dyes and handmade paper.",
+    mobileNumber: "9876543211",
+    rating: 4.6,
+    ratingCount: 18,
+    bio: "Meera Devi practices authentic Mithila and Madhubani painting techniques using natural dyes and handmade paper.",
     photoUrl: "assets/madhubani_art.png",
     isVerified: true,
     registeredAt: "15 Sep 2026",
     craftExperience: "Heritage Folk Art",
+    productCount: 2,
+    passportCount: 2
+  },
+  {
+    id: "CRF-ART-001286",
+    name: "Harpreet Singh",
+    craftCategory: "Phulkari Embroidery",
+    location: "Punjab, India",
+    mobileNumber: "9876543212",
+    rating: 4.7,
+    ratingCount: 15,
+    bio: "Harpreet Singh is a master artisan specializing in authentic geometric and floral Phulkari needlework on handloom cotton.",
+    photoUrl: "assets/artisan_ramesh.png",
+    isVerified: true,
+    registeredAt: "16 Sep 2026",
+    craftExperience: "Traditional Phulkari Needlework",
     productCount: 1,
     passportCount: 1
   }
 ];
 
 export const INITIAL_PRODUCTS = [
+  // Artisan 1: Ramesh Kumar (5 products - Bamboo Craft)
   {
     id: "CRF-BAM-001284",
-    artisanId: "CRF-ART-001284",
-    artisanName: "Ramesh Kumar",
-    artisanLocation: "Assam, India",
-    artisanPhoto: "assets/artisan_ramesh.png",
-    title: "Bamboo Handwoven Basket",
-    category: "Bamboo Craft",
-    materials: ["Natural Bamboo"],
-    productionTimeDays: 2,
-    description: "Handcrafted bamboo basket made using traditional Assamese weaving techniques. Durable, eco-friendly, and lightweight.",
-    tags: ["Handmade", "Eco-friendly", "Traditional", "Bamboo"],
-    price: 680,
-    costBreakdown: {
-      materialCost: 180,
-      labourCost: 250,
-      productionTimeDays: 2,
-      packagingCost: 40,
-      totalEstimatedCost: 470
-    },
-    aiInsight: {
-      marketDemand: "High",
-      similarPriceRange: { min: 550, max: 750 },
-      indicativePriceRange: { min: 650, max: 700 },
-      suggestedPrice: 680,
-      confidenceScore: 0.94
-    },
-    buyerMatches: [
-      { id: "M1", buyerCategory: "Handicraft Retailer", matchPercentage: 94, lookingFor: "Bamboo crafts", requirement: "Seeking eco-friendly home storage inventory" },
-      { id: "M2", buyerCategory: "Hospitality & Decor Buyer", matchPercentage: 88, lookingFor: "Handmade decor", requirement: "Resort lobby & dining table accent pieces" },
-      { id: "M3", buyerCategory: "Gift & Lifestyle Store", matchPercentage: 81, lookingFor: "Eco-friendly handmade products", requirement: "Sustainable gift packaging & hampers" }
-    ],
-    blockchainRecord: {
-      network: "Polygon Testnet Demo",
-      recordType: "Prototype Blockchain Record",
-      status: "Recorded",
-      recordedAt: "17 Sep 2026",
-      isDemo: true,
-      events: [
-        { title: "Product Registration", date: "17 Sep 2026", status: "Completed" },
-        { title: "Product Details Recorded", date: "17 Sep 2026", status: "Completed" },
-        { title: "Verification Review", date: "17 Sep 2026", status: "Verification Approved" }
-      ]
-    },
-    status: "verified",
-    imageUrl: "assets/bamboo_basket.png",
-    passportAvailable: true
-  },
-  {
-    id: "CRF-MAD-001285",
-    artisanId: "CRF-ART-001285",
-    artisanName: "Sita Devi",
-    artisanLocation: "Bihar, India",
-    artisanPhoto: "assets/madhubani_art.png",
-    title: "Madhubani Artwork",
-    category: "Madhubani Painting",
-    materials: ["Handmade Paper", "Natural Dyes"],
-    productionTimeDays: 5,
-    description: "Intricate traditional Madhubani painting depicting nature and cultural folk motifs.",
-    tags: ["Folk Art", "Handmade Paper", "Natural Dyes"],
-    price: 1200,
-    costBreakdown: {
-      materialCost: 350,
-      labourCost: 600,
-      productionTimeDays: 5,
-      packagingCost: 50,
-      totalEstimatedCost: 1000
-    },
-    aiInsight: {
-      marketDemand: "High",
-      similarPriceRange: { min: 1000, max: 1500 },
-      indicativePriceRange: { min: 1150, max: 1300 },
-      suggestedPrice: 1200,
-      confidenceScore: 0.96
-    },
-    buyerMatches: [
-      { id: "M4", buyerCategory: "Art Gallery & Decor", matchPercentage: 96, lookingFor: "Heritage Folk Art", requirement: "Exhibition wall art collection" }
-    ],
-    blockchainRecord: {
-      network: "Polygon Testnet Demo",
-      recordType: "Prototype Blockchain Record",
-      status: "Recorded",
-      recordedAt: "15 Sep 2026",
-      isDemo: true,
-      events: [
-        { title: "Product Registration", date: "15 Sep 2026", status: "Completed" },
-        { title: "Product Details Recorded", date: "15 Sep 2026", status: "Completed" }
-      ]
-    },
-    status: "verified",
-    imageUrl: "assets/madhubani_art.png",
-    passportAvailable: true
-  },
-  {
-    id: "CRF-BAM-001286",
+    isDemo: true,
+    hasSalesHistory: true,
     artisanId: "CRF-ART-001284",
     artisanName: "Ramesh Kumar",
     artisanLocation: "Assam, India",
@@ -145,38 +80,191 @@ export const INITIAL_PRODUCTS = [
     category: "Bamboo Craft",
     materials: ["Natural Bamboo", "Woven Mesh"],
     productionTimeDays: 3,
-    description: "Handcrafted bamboo ambient table lamp projecting geometric shadow patterns.",
-    tags: ["Lighting", "Bamboo", "Eco-friendly"],
-    price: 950,
-    costBreakdown: {
-      materialCost: 280,
-      labourCost: 400,
-      productionTimeDays: 3,
-      packagingCost: 60,
-      totalEstimatedCost: 740
-    },
-    aiInsight: {
-      marketDemand: "High",
-      similarPriceRange: { min: 850, max: 1200 },
-      indicativePriceRange: { min: 900, max: 1000 },
-      suggestedPrice: 950,
-      confidenceScore: 0.93
-    },
-    buyerMatches: [
-      { id: "M5", buyerCategory: "Boutique Home Decor", matchPercentage: 91, lookingFor: "Ambient Bamboo Lamps", requirement: "Modern eco-lighting fixtures" }
-    ],
-    blockchainRecord: {
-      network: "Polygon Testnet Demo",
-      recordType: "Prototype Blockchain Record",
-      status: "Recorded",
-      recordedAt: "18 Sep 2026",
-      isDemo: true,
-      events: [
-        { title: "Product Registration", date: "18 Sep 2026", status: "Completed" }
-      ]
-    },
+    description: "Handcrafted ambient table lamp projecting geometric shadows through fine bamboo strips.",
+    tags: ["Lighting", "Bamboo", "Eco-friendly", "Decor"],
+    price: 1450,
+    rating: 4.8,
+    ratingCount: 24,
+    costBreakdown: { materialCost: 380, labourCost: 550, productionTimeDays: 3, packagingCost: 80, totalEstimatedCost: 1010 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 1200, max: 1700 }, indicativePriceRange: { min: 1400, max: 1500 }, suggestedPrice: 1450, confidenceScore: 0.95 },
+    buyerMatches: [ { id: "M1", buyerCategory: "Boutique Home Decor", matchPercentage: 94, lookingFor: "Ambient Bamboo Lamps", requirement: "Modern eco-lighting fixtures" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "17 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "17 Sep 2026", status: "Completed" }] },
     status: "verified",
     imageUrl: "assets/bamboo_lamp.png",
+    passportAvailable: true
+  },
+  {
+    id: "CRF-BAM-001285",
+    isDemo: true,
+    hasSalesHistory: true,
+    artisanId: "CRF-ART-001284",
+    artisanName: "Ramesh Kumar",
+    artisanLocation: "Assam, India",
+    artisanPhoto: "assets/artisan_ramesh.png",
+    title: "Bamboo Storage Basket",
+    category: "Bamboo Craft",
+    materials: ["Natural Bamboo", "Cane Ribs"],
+    productionTimeDays: 2,
+    description: "Durable multipurpose cylindrical basket woven with reinforced base for home storage.",
+    tags: ["Storage", "Eco-friendly", "Handmade", "Bamboo"],
+    price: 680,
+    rating: 4.8,
+    ratingCount: 24,
+    costBreakdown: { materialCost: 180, labourCost: 250, productionTimeDays: 2, packagingCost: 40, totalEstimatedCost: 470 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 550, max: 750 }, indicativePriceRange: { min: 650, max: 700 }, suggestedPrice: 680, confidenceScore: 0.94 },
+    buyerMatches: [ { id: "M2", buyerCategory: "Handicraft Retailer", matchPercentage: 91, lookingFor: "Bamboo crafts", requirement: "Seeking eco-friendly storage inventory" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "17 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "17 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/bamboo_basket.png",
+    passportAvailable: true
+  },
+  {
+    id: "CRF-BAM-001286",
+    isDemo: true,
+    hasSalesHistory: true,
+    artisanId: "CRF-ART-001284",
+    artisanName: "Ramesh Kumar",
+    artisanLocation: "Assam, India",
+    artisanPhoto: "assets/artisan_ramesh.png",
+    title: "Handwoven Bamboo Basket",
+    category: "Bamboo Craft",
+    materials: ["Natural Bamboo", "Treated Cane"],
+    productionTimeDays: 2,
+    description: "Traditional Assamese open-weave shallow basket suitable for fruits and bread serving.",
+    tags: ["Kitchenware", "Traditional", "Handwoven", "Bamboo"],
+    price: 520,
+    rating: 4.8,
+    ratingCount: 24,
+    costBreakdown: { materialCost: 140, labourCost: 200, productionTimeDays: 2, packagingCost: 35, totalEstimatedCost: 375 },
+    aiInsight: { marketDemand: "Medium", similarPriceRange: { min: 450, max: 600 }, indicativePriceRange: { min: 500, max: 550 }, suggestedPrice: 520, confidenceScore: 0.91 },
+    buyerMatches: [ { id: "M3", buyerCategory: "Eco Dining Store", matchPercentage: 88, lookingFor: "Natural table accessories", requirement: "Organic dining collection" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "17 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "17 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/bamboo_basket.png",
+    passportAvailable: true
+  },
+  {
+    id: "CRF-BAM-001287",
+    isDemo: true,
+    artisanId: "CRF-ART-001284",
+    artisanName: "Ramesh Kumar",
+    artisanLocation: "Assam, India",
+    artisanPhoto: "assets/artisan_ramesh.png",
+    title: "Bamboo Decorative Tray",
+    category: "Bamboo Craft",
+    materials: ["Polished Bamboo", "Lacquer Finish"],
+    productionTimeDays: 2,
+    description: "Rectangular decorative serving tray accented with fine weave patterns and smooth handles.",
+    tags: ["Tray", "Decor", "Handmade", "Tableware"],
+    price: 420,
+    rating: 4.8,
+    ratingCount: 24,
+    costBreakdown: { materialCost: 110, labourCost: 170, productionTimeDays: 2, packagingCost: 30, totalEstimatedCost: 310 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 380, max: 500 }, indicativePriceRange: { min: 400, max: 450 }, suggestedPrice: 420, confidenceScore: 0.92 },
+    buyerMatches: [ { id: "M4", buyerCategory: "Hospitality & Dining", matchPercentage: 89, lookingFor: "Serving Trays", requirement: "Resort table accessories" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "18 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "18 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/bamboo_basket.png",
+    passportAvailable: true
+  },
+  {
+    id: "CRF-BAM-001288",
+    isDemo: true,
+    artisanId: "CRF-ART-001284",
+    artisanName: "Ramesh Kumar",
+    artisanLocation: "Assam, India",
+    artisanPhoto: "assets/artisan_ramesh.png",
+    title: "Bamboo Utility Organizer",
+    category: "Bamboo Craft",
+    materials: ["Split Bamboo", "Eco-friendly Polish"],
+    productionTimeDays: 3,
+    description: "Compact desk and shelf organizer with 3 compartmentalized handmade bamboo sections.",
+    tags: ["Office", "Organization", "Eco-friendly", "Bamboo"],
+    price: 750,
+    rating: 4.8,
+    ratingCount: 24,
+    costBreakdown: { materialCost: 200, labourCost: 320, productionTimeDays: 3, packagingCost: 50, totalEstimatedCost: 570 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 650, max: 880 }, indicativePriceRange: { min: 700, max: 780 }, suggestedPrice: 750, confidenceScore: 0.93 },
+    buyerMatches: [ { id: "M5", buyerCategory: "Corporate Gifting", matchPercentage: 92, lookingFor: "Sustainable Desk Accessories", requirement: "Festive corporate order" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "18 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "18 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/bamboo_lamp.png",
+    passportAvailable: true
+  },
+
+  // Artisan 2: Meera Devi (2 products)
+  {
+    id: "CRF-MAD-002101",
+    isDemo: true,
+    artisanId: "CRF-ART-001285",
+    artisanName: "Meera Devi",
+    artisanLocation: "Bihar, India",
+    artisanPhoto: "assets/madhubani_art.png",
+    title: "Madhubani Artwork Frame",
+    category: "Madhubani Painting",
+    materials: ["Handmade Paper", "Natural Dyes"],
+    productionTimeDays: 5,
+    description: "Intricate traditional Madhubani painting depicting nature and cultural folk motifs.",
+    tags: ["Folk Art", "Handmade Paper", "Natural Dyes", "Painting"],
+    price: 1200,
+    rating: 4.6,
+    ratingCount: 18,
+    costBreakdown: { materialCost: 350, labourCost: 600, productionTimeDays: 5, packagingCost: 50, totalEstimatedCost: 1000 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 1000, max: 1500 }, indicativePriceRange: { min: 1150, max: 1300 }, suggestedPrice: 1200, confidenceScore: 0.96 },
+    buyerMatches: [ { id: "M6", buyerCategory: "Art Gallery & Decor", matchPercentage: 96, lookingFor: "Heritage Folk Art", requirement: "Exhibition wall art collection" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "15 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "15 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/madhubani_art.png",
+    passportAvailable: true
+  },
+  {
+    id: "CRF-POT-003101",
+    isDemo: true,
+    artisanId: "CRF-ART-001285",
+    artisanName: "Meera Devi",
+    artisanLocation: "Bihar, India",
+    artisanPhoto: "assets/madhubani_art.png",
+    title: "Jaipur Blue Pottery Glazed Vase",
+    category: "Blue Pottery",
+    materials: ["Quartz Powder", "Glazed Ceramic"],
+    productionTimeDays: 4,
+    description: "Hand-painted blue pottery floral vase crafted with mineral colors and high-gloss glaze.",
+    tags: ["Pottery", "Blue Pottery", "Ceramic", "Handmade"],
+    price: 1250,
+    rating: 4.6,
+    ratingCount: 18,
+    costBreakdown: { materialCost: 320, labourCost: 580, productionTimeDays: 4, packagingCost: 70, totalEstimatedCost: 970 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 1100, max: 1450 }, indicativePriceRange: { min: 1200, max: 1300 }, suggestedPrice: 1250, confidenceScore: 0.92 },
+    buyerMatches: [ { id: "M7", buyerCategory: "Home Decor Curator", matchPercentage: 90, lookingFor: "Glazed Ceramics", requirement: "Heritage interior vase collection" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "16 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "16 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/madhubani_art.png",
+    passportAvailable: true
+  },
+
+  // Artisan 3: Harpreet Singh (1 product)
+  {
+    id: "CRF-PHU-004101",
+    isDemo: true,
+    artisanId: "CRF-ART-001286",
+    artisanName: "Harpreet Singh",
+    artisanLocation: "Punjab, India",
+    artisanPhoto: "assets/artisan_ramesh.png",
+    title: "Traditional Handloom Phulkari Dupatta",
+    category: "Phulkari",
+    materials: ["Khadi Cotton", "Pat Silk Thread"],
+    productionTimeDays: 6,
+    description: "Traditional Punjabi Phulkari scarf embroidered with vibrant geometric silk motifs on handloom khadi.",
+    tags: ["Phulkari", "Embroidery", "Handloom", "Punjab", "Textiles"],
+    price: 1950,
+    rating: 4.7,
+    ratingCount: 15,
+    costBreakdown: { materialCost: 550, labourCost: 950, productionTimeDays: 6, packagingCost: 70, totalEstimatedCost: 1570 },
+    aiInsight: { marketDemand: "High", similarPriceRange: { min: 1750, max: 2200 }, indicativePriceRange: { min: 1900, max: 2000 }, suggestedPrice: 1950, confidenceScore: 0.95 },
+    buyerMatches: [ { id: "M8", buyerCategory: "Ethnic Apparel Boutique", matchPercentage: 95, lookingFor: "Authentic Phulkari", requirement: "Festive handloom collection" } ],
+    blockchainRecord: { network: "Polygon Testnet Demo", recordType: "Prototype Blockchain Record", status: "Recorded", recordedAt: "17 Sep 2026", isDemo: true, events: [{ title: "Product Registration", date: "17 Sep 2026", status: "Completed" }] },
+    status: "verified",
+    imageUrl: "assets/madhubani_art.png",
     passportAvailable: true
   }
 ];
@@ -197,8 +285,8 @@ export const INITIAL_BUYER_REQUESTS = [
 ];
 
 export const INITIAL_ADMIN_STATS = {
-  registeredArtisans: 24,
-  registeredProducts: 86,
-  artisanVerificationPending: 8,
-  productVerificationPending: 12
+  registeredArtisans: 3,
+  registeredProducts: 8,
+  artisanVerificationPending: 0,
+  productVerificationPending: 0
 };

@@ -937,10 +937,35 @@ a:hover { color: var(--green-hover); text-decoration: underline; }
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-canvas); }
 ::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 3px; }
+/* ── SELECTION ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ── SELECTION ───────────────────────────────────────────────────── */
 ::selection {
   background: var(--green-muted);
   color: var(--green);
+}
+
+/* ── SCREEN 1 LANDING REFINEMENTS ───────────────────────────────── */
+.landing-cta-artisan:hover {
+  background: var(--green-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(33, 80, 54, 0.28) !important;
+}
+.landing-cta-artisan:active {
+  transform: translateY(0);
+}
+
+.landing-cta-buyer:hover {
+  border-color: var(--green) !important;
+  color: var(--green) !important;
+  background: var(--green-pale) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+.landing-cta-buyer:active {
+  transform: translateY(0);
+}
+
+.landing-hero-card:hover {
+  box-shadow: 0 14px 32px -4px rgba(28, 25, 23, 0.12), 0 6px 12px -2px rgba(28, 25, 23, 0.05) !important;
 }

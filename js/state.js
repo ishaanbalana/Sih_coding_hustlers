@@ -21,6 +21,12 @@ class AppStateStore {
     if (saved) {
       try {
         this.data = JSON.parse(saved);
+        if (!this.data.navigationHistory) {
+          this.data.navigationHistory = { artisan: [], buyer: [], admin: [] };
+        }
+        if (!Array.isArray(this.data.navigationHistory.artisan)) this.data.navigationHistory.artisan = [];
+        if (!Array.isArray(this.data.navigationHistory.buyer)) this.data.navigationHistory.buyer = [];
+        if (!Array.isArray(this.data.navigationHistory.admin)) this.data.navigationHistory.admin = [];
       } catch (e) {
         console.error('Failed to parse saved CRAFTORA state, resetting...', e);
         this.initDefaultState();
@@ -85,7 +91,30 @@ class AppStateStore {
           name: 'Ramesh Kumar',
           craftCategory: 'Bamboo Craft',
           location: 'Assam, India',
-          mobileNumber: '9876543210'
+          mobileNumber: '9876543210',
+          rating: 4.8,
+          ratingCount: 24,
+          productsSold: 18,
+          totalEarnings: 18650,
+          ordersCompleted: 14
+        },
+        {
+          id: 'CRF-ART-001285',
+          name: 'Meera Devi',
+          craftCategory: 'Madhubani Painting',
+          location: 'Bihar, India',
+          mobileNumber: '9876543211',
+          rating: 4.6,
+          ratingCount: 18
+        },
+        {
+          id: 'CRF-ART-001286',
+          name: 'Harpreet Singh',
+          craftCategory: 'Phulkari Embroidery',
+          location: 'Punjab, India',
+          mobileNumber: '9876543212',
+          rating: 4.7,
+          ratingCount: 15
         }
       ],
       savedBuyers: [
@@ -98,10 +127,10 @@ class AppStateStore {
       ],
 
       // Core Data Collections
-      artisans: INITIAL_ARTISANS,
-      products: INITIAL_PRODUCTS,
-      buyerRequests: INITIAL_BUYER_REQUESTS,
-      adminStats: INITIAL_ADMIN_STATS,
+      artisans: JSON.parse(JSON.stringify(INITIAL_ARTISANS)),
+      products: JSON.parse(JSON.stringify(INITIAL_PRODUCTS)),
+      buyerRequests: JSON.parse(JSON.stringify(INITIAL_BUYER_REQUESTS)),
+      adminStats: JSON.parse(JSON.stringify(INITIAL_ADMIN_STATS)),
 
       // Active Selection & Temporary States
       selectedProductId: 'CRF-BAM-001284',
@@ -111,7 +140,16 @@ class AppStateStore {
       isVoiceModalOpen: false,
       voiceTranscript: '',
       isQRScannerOpen: false,
-      scannedQRProduct: null
+      scannedQRProduct: null,
+      buyerSearchQuery: '',
+      buyerSelectedCategory: 'all',
+
+      // Navigation History Stack
+      navigationHistory: {
+        artisan: [],
+        buyer: [],
+        admin: []
+      }
     };
     this.saveState();
   }
@@ -141,6 +179,14 @@ class AppStateStore {
       if (!this.data.adminAuth?.isLoggedIn) {
         this.data.activeAdminScreen = 'login';
       }
+    } else if (role === 'artisan') {
+      if (this.data.artisanAuth?.isRegistered) {
+        if (!this.data.activeArtisanScreen || this.data.activeArtisanScreen === 'onboarding') {
+          this.data.activeArtisanScreen = 'dashboard';
+        }
+      } else {
+        this.data.activeArtisanScreen = 'onboarding';
+      }
     }
     this.notify();
   }
@@ -150,21 +196,108 @@ class AppStateStore {
     this.notify();
   }
 
-  setArtisanScreen(screen, params = {}) {
+  setArtisanScreen(screen, params = {}, options = {}) {
+    // 1. Admin must NOT be treated as Artisan
+    if (this.data.currentRole === 'admin') {
+      console.warn('Unauthorized access attempt to artisan route from admin');
+      return { success: false, reason: 'admin_denied' };
+    }
+
+    // 2. Authenticated Buyer must NOT access Artisan My Crafts or any artisan screen
+    if (this.data.currentRole === 'buyer') {
+      console.warn('Unauthorized access attempt to artisan route from buyer');
+      return { success: false, reason: 'buyer_denied' };
+    }
+
+    const protectedScreens = [
+      'dashboard', 'my_crafts', 'product_detail', 'edit_product',
+      'add_product', 'ai_analysis', 'review_product', 'smart_pricing',
+      'market_matches', 'passport', 'provenance'
+    ];
+
+    const isProtected = protectedScreens.includes(screen);
+    const isAuthenticated = Boolean(this.data.artisanAuth?.isRegistered);
+
+    // 3. Unauthenticated user:
+    // If not authenticated and trying to access a protected artisan route, redirect to Artisan Login ('onboarding')
+    if (isProtected && !isAuthenticated) {
+      console.warn('Unauthenticated access attempt to protected artisan route:', screen, '-> Redirecting to Artisan Login');
+      this.data.currentRole = 'artisan';
+      this.data.activeArtisanScreen = 'onboarding';
+      this.notify();
+      return { success: false, redirectedTo: 'onboarding' };
+    }
+
+    // 4. Record navigation history for forward navigation
+    if (!options.isBack && !options.replace) {
+      if (!this.data.navigationHistory) this.data.navigationHistory = { artisan: [], buyer: [], admin: [] };
+      if (!Array.isArray(this.data.navigationHistory.artisan)) this.data.navigationHistory.artisan = [];
+
+      const currentScreen = this.data.activeArtisanScreen;
+      const currentProductId = this.data.selectedProductId;
+
+      if (currentScreen && (currentScreen !== screen || (params.productId && params.productId !== currentProductId))) {
+        this.data.navigationHistory.artisan.push({
+          screen: currentScreen,
+          params: {
+            productId: currentProductId,
+            artisanId: this.data.selectedArtisanId
+          }
+        });
+        if (this.data.navigationHistory.artisan.length > 50) {
+          this.data.navigationHistory.artisan.shift();
+        }
+      }
+    }
+
+    // 5. Authenticated Artisan:
+    // Protected Artisan route -> allow access directly without login redirect
+    this.data.currentRole = 'artisan';
     this.data.activeArtisanScreen = screen;
     if (params.productId) this.data.selectedProductId = params.productId;
     if (params.artisanId) this.data.selectedArtisanId = params.artisanId;
     this.notify();
+    return { success: true, screen };
   }
 
-  setBuyerScreen(screen, params = {}) {
+  logoutArtisan() {
+    this.data.artisanAuth.isRegistered = false;
+    this.data.artisanAuth.artisanProfile = null;
+    this.data.activeArtisanScreen = 'onboarding';
+    if (this.data.navigationHistory) {
+      this.data.navigationHistory.artisan = [];
+    }
+    this.notify();
+  }
+
+  setBuyerScreen(screen, params = {}, options = {}) {
+    if (!options.isBack && !options.replace) {
+      if (!this.data.navigationHistory) this.data.navigationHistory = { artisan: [], buyer: [], admin: [] };
+      if (!Array.isArray(this.data.navigationHistory.buyer)) this.data.navigationHistory.buyer = [];
+
+      const currentScreen = this.data.activeBuyerScreen;
+      const currentProductId = this.data.selectedProductId;
+      if (currentScreen && (currentScreen !== screen || (params.productId && params.productId !== currentProductId))) {
+        this.data.navigationHistory.buyer.push({
+          screen: currentScreen,
+          params: {
+            productId: currentProductId,
+            artisanId: this.data.selectedArtisanId
+          }
+        });
+        if (this.data.navigationHistory.buyer.length > 50) {
+          this.data.navigationHistory.buyer.shift();
+        }
+      }
+    }
+
     this.data.activeBuyerScreen = screen;
     if (params.productId) this.data.selectedProductId = params.productId;
     if (params.artisanId) this.data.selectedArtisanId = params.artisanId;
     this.notify();
   }
 
-  setAdminScreen(screen, params = {}) {
+  setAdminScreen(screen, params = {}, options = {}) {
     // Normal artisan/buyer users cannot access admin routes
     if (this.data.currentRole !== 'admin') {
       console.warn('Unauthorized access attempt to admin route from role:', this.data.currentRole);
@@ -179,6 +312,24 @@ class AppStateStore {
       return;
     }
 
+    if (!options.isBack && !options.replace) {
+      if (!this.data.navigationHistory) this.data.navigationHistory = { artisan: [], buyer: [], admin: [] };
+      if (!Array.isArray(this.data.navigationHistory.admin)) this.data.navigationHistory.admin = [];
+
+      const currentScreen = this.data.activeAdminScreen;
+      if (currentScreen && currentScreen !== screen) {
+        this.data.navigationHistory.admin.push({
+          screen: currentScreen,
+          params: {
+            target: this.data.adminReviewingTarget
+          }
+        });
+        if (this.data.navigationHistory.admin.length > 50) {
+          this.data.navigationHistory.admin.shift();
+        }
+      }
+    }
+
     if (!this.data.adminAuth?.isLoggedIn) {
       this.data.activeAdminScreen = 'login';
     } else {
@@ -186,6 +337,111 @@ class AppStateStore {
     }
     if (params.target) this.data.adminReviewingTarget = params.target;
     this.notify();
+  }
+
+  goBack() {
+    const role = this.data.currentRole;
+    if (role === 'landing') return false;
+
+    if (!this.data.navigationHistory) {
+      this.data.navigationHistory = { artisan: [], buyer: [], admin: [] };
+    }
+
+    if (role === 'artisan') {
+      const current = this.data.activeArtisanScreen;
+      if (current === 'onboarding') {
+        this.setRole('landing');
+        return true;
+      }
+
+      const history = this.data.navigationHistory.artisan || [];
+      let prev = null;
+      while (history.length > 0) {
+        const candidate = history.pop();
+        if (candidate && (candidate.screen !== current || (candidate.params?.productId && candidate.params.productId !== this.data.selectedProductId))) {
+          prev = candidate;
+          break;
+        }
+      }
+
+      if (prev) {
+        this.setArtisanScreen(prev.screen, prev.params || {}, { isBack: true });
+        return true;
+      } else {
+        // Fallback: If no previous screen in current app flow, use appropriate role home/dashboard
+        const fallbackScreen = this.data.artisanAuth?.isRegistered ? 'dashboard' : 'onboarding';
+        if (current !== fallbackScreen) {
+          this.setArtisanScreen(fallbackScreen, {}, { isBack: true });
+          return true;
+        } else if (this.data.artisanAuth?.isRegistered) {
+          return false;
+        } else {
+          this.setRole('landing');
+          return true;
+        }
+      }
+    } else if (role === 'buyer') {
+      const current = this.data.activeBuyerScreen;
+      if (current === 'welcome') {
+        this.setRole('landing');
+        return true;
+      }
+
+      const history = this.data.navigationHistory.buyer || [];
+      let prev = null;
+      while (history.length > 0) {
+        const candidate = history.pop();
+        if (candidate && (candidate.screen !== current || (candidate.params?.productId && candidate.params.productId !== this.data.selectedProductId))) {
+          prev = candidate;
+          break;
+        }
+      }
+
+      if (prev) {
+        this.setBuyerScreen(prev.screen, prev.params || {}, { isBack: true });
+        return true;
+      } else {
+        const fallbackScreen = 'explore';
+        if (current !== fallbackScreen) {
+          this.setBuyerScreen(fallbackScreen, {}, { isBack: true });
+          return true;
+        } else {
+          this.setRole('landing');
+          return true;
+        }
+      }
+    } else if (role === 'admin') {
+      const current = this.data.activeAdminScreen;
+      if (current === 'login') {
+        this.setRole('landing');
+        return true;
+      }
+
+      const history = this.data.navigationHistory.admin || [];
+      let prev = null;
+      while (history.length > 0) {
+        const candidate = history.pop();
+        if (candidate && candidate.screen !== current) {
+          prev = candidate;
+          break;
+        }
+      }
+
+      if (prev) {
+        this.setAdminScreen(prev.screen, prev.params || {}, { isBack: true });
+        return true;
+      } else {
+        const fallbackScreen = 'dashboard';
+        if (current !== fallbackScreen) {
+          this.setAdminScreen(fallbackScreen, {}, { isBack: true });
+          return true;
+        } else {
+          this.setRole('landing');
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   loginAdmin(username, password) {
@@ -226,15 +482,59 @@ class AppStateStore {
     this.notify();
   }
 
+  completeArtisanRegistration(name, craftCategory, location, mobileNumber) {
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+    const generatedId = `CRF-ART-${randomSuffix}`;
+
+    const newProfile = {
+      id: generatedId,
+      name: name || this.data.onboardingDraft?.name || 'Artisan Partner',
+      craftCategory: craftCategory || this.data.onboardingDraft?.craftCategory || 'Bamboo Craft',
+      location: location || this.data.onboardingDraft?.location || 'India',
+      mobileNumber: mobileNumber || this.data.onboardingDraft?.mobileNumber || '9876543210',
+      rating: 0,
+      ratingCount: 0,
+      productsSold: 0,
+      totalEarnings: 0,
+      ordersCompleted: 0,
+      recentSales: [],
+      isNewArtisan: true
+    };
+
+    this.data.currentRole = 'artisan';
+    this.data.artisanAuth.isRegistered = true;
+    this.data.artisanAuth.artisanProfile = newProfile;
+    this.data.selectedArtisanId = generatedId;
+
+    if (!this.data.savedArtisans) this.data.savedArtisans = [];
+    this.data.savedArtisans.push(newProfile);
+
+    if (!this.data.artisans) this.data.artisans = [];
+    this.data.artisans.push(newProfile);
+
+    if (this.data.onboardingDraft) {
+      this.data.onboardingDraft.artisanId = generatedId;
+      this.data.onboardingDraft.name = newProfile.name;
+      this.data.onboardingDraft.craftCategory = newProfile.craftCategory;
+      this.data.onboardingDraft.location = newProfile.location;
+    }
+
+    this.data.activeArtisanScreen = 'artisan_id_card';
+    this.notify();
+    return newProfile;
+  }
+
   loginReturningArtisan(mobileNumber = '9876543210') {
     const cleanNumber = (mobileNumber || '').replace(/\D/g, '');
     const found = (this.data.savedArtisans || []).find(a => (a.mobileNumber || '').replace(/\D/g, '') === cleanNumber)
-      || this.data.savedArtisans[0]
+      || (this.data.artisans || []).find(a => (a.mobileNumber || '').replace(/\D/g, '') === cleanNumber)
+      || (this.data.savedArtisans || [])[0]
       || INITIAL_ARTISANS[0];
 
     this.data.currentRole = 'artisan';
     this.data.artisanAuth.isRegistered = true;
     this.data.artisanAuth.artisanProfile = { ...found };
+    this.data.selectedArtisanId = found.id;
     this.data.activeArtisanScreen = 'dashboard';
     this.notify();
     return { success: true, profile: found };
@@ -246,6 +546,45 @@ class AppStateStore {
     } else {
       this.startNewArtisanRegistration();
     }
+  }
+
+  rateArtisan(artisanId, rating) {
+    const num = Number(rating);
+    if (!artisanId || isNaN(num) || num < 1 || num > 5) {
+      return { success: false, reason: 'invalid_rating' };
+    }
+    // Prevent an artisan from rating themselves
+    if (this.data.currentRole === 'artisan' && this.data.artisanAuth?.artisanProfile?.id === artisanId) {
+      console.warn('Artisan cannot rate themselves');
+      return { success: false, reason: 'artisan_self_rating_denied' };
+    }
+
+    const artisan = (this.data.artisans || []).find(a => a.id === artisanId);
+    if (!artisan) return { success: false, reason: 'artisan_not_found' };
+
+    const curCount = Number(artisan.ratingCount) || 1;
+    const curRating = Number(artisan.rating) || 4.8;
+    const newCount = curCount + 1;
+    const newAvg = Math.round(((curRating * curCount + num) / newCount) * 10) / 10;
+
+    artisan.rating = newAvg;
+    artisan.ratingCount = newCount;
+
+    const saved = (this.data.savedArtisans || []).find(a => a.id === artisanId);
+    if (saved) {
+      saved.rating = newAvg;
+      saved.ratingCount = newCount;
+    }
+
+    (this.data.products || []).forEach(p => {
+      if (p.artisanId === artisanId) {
+        p.rating = newAvg;
+        p.ratingCount = newCount;
+      }
+    });
+
+    this.notify();
+    return { success: true, rating: newAvg, ratingCount: newCount };
   }
 
   // Buyer Auth Flow Handlers
@@ -327,6 +666,9 @@ class AppStateStore {
   }
 
   addProduct(newProduct) {
+    if (newProduct.isDemo === undefined) {
+      newProduct.isDemo = false;
+    }
     this.data.products.unshift(newProduct);
     this.data.selectedProductId = newProduct.id;
     this.data.adminStats.productVerificationPending += 1;
@@ -340,6 +682,73 @@ class AppStateStore {
       this.data.products[index] = { ...this.data.products[index], ...updatedProduct };
       this.notify();
     }
+  }
+
+  deleteProduct(productId, requestingArtisanId) {
+    if (!productId) return { success: false, reason: 'missing_product_id' };
+
+    const product = (this.data.products || []).find(p => p.id === productId);
+    if (!product) return { success: false, reason: 'not_found' };
+
+    // Role check: Only authenticated artisan can delete from artisan flow
+    if (this.data.currentRole !== 'artisan') {
+      return { success: false, reason: 'unauthorized_role' };
+    }
+
+    // Ownership check: must belong to the currently authenticated artisan
+    const currentArtisan = this.data.artisanAuth?.artisanProfile
+      || (this.data.selectedArtisanId && this.data.savedArtisans && this.data.savedArtisans.find(a => a.id === this.data.selectedArtisanId))
+      || (this.data.savedArtisans && this.data.savedArtisans[0]);
+    const authenticatedId = requestingArtisanId || currentArtisan?.id || this.data.selectedArtisanId;
+
+    if (product.artisanId !== authenticatedId) {
+      console.warn('Ownership check failed: Artisan cannot delete another artisan product');
+      return { success: false, reason: 'unauthorized_not_owner' };
+    }
+
+    // Protection for demo products
+    if (product.isDemo) {
+      return {
+        success: false,
+        reason: 'demo_product_protected',
+        message: 'This demo product is protected from deletion in the prototype demonstration.'
+      };
+    }
+
+    // Protection for sold products with historical sales records
+    if (product.hasSalesHistory) {
+      return {
+        success: false,
+        reason: 'sales_history_protected',
+        message: 'This product has sales history and cannot be deleted from active records.'
+      };
+    }
+
+    // Central state removal: permanently removes from application state
+    this.data.products = this.data.products.filter(p => p.id !== productId);
+
+    // Update selectedProductId if pointing to the deleted product
+    if (this.data.selectedProductId === productId) {
+      const remainingMyProducts = this.data.products.filter(p => p.artisanId === authenticatedId);
+      this.data.selectedProductId = remainingMyProducts.length > 0 ? remainingMyProducts[0].id : (this.data.products[0]?.id || null);
+    }
+
+    // Clean navigation history so back navigation does not return to deleted product
+    if (this.data.navigationHistory?.artisan) {
+      this.data.navigationHistory.artisan = this.data.navigationHistory.artisan.filter(h => h.params?.productId !== productId);
+    }
+    if (this.data.navigationHistory?.buyer) {
+      this.data.navigationHistory.buyer = this.data.navigationHistory.buyer.filter(h => h.params?.productId !== productId);
+    }
+
+    // Clear confirmation dialog state
+    delete this.data.deleteConfirmProductId;
+
+    // Navigate to My Crafts
+    this.data.activeArtisanScreen = 'my_crafts';
+
+    this.notify();
+    return { success: true, productId };
   }
 
   addBuyerRequest(request) {

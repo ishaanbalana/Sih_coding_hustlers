@@ -13,7 +13,9 @@ export function renderBuyerView(screen) {
   const products = state.products;
   const artisans = state.artisans;
 
-  const selectedProduct = products.find(p => p.id === state.selectedProductId) || products[0];
+  const selectedProduct = state.selectedProductId
+    ? products.find(p => p.id === state.selectedProductId)
+    : products[0];
   const selectedArtisan = artisans.find(a => a.id === state.selectedArtisanId) || artisans[0];
 
   switch (screen) {
@@ -54,26 +56,34 @@ function renderScreen2B_BuyerWelcome() {
   return `
     <div style="padding: 24px 20px; text-align: center;">
       <div style="font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--text-copper); text-transform: uppercase; margin-bottom: 6px;">
-        BUYER DISCOVERY
+        BUYER AUTHENTICATION
       </div>
       <h2 style="font-size: 22px; margin-bottom: 6px; font-weight: 800;">Welcome, Buyer 👋</h2>
-      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 28px;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">
         Discover authentic handmade crafts & meet the artisans behind them.
       </p>
 
-      <div style="display: flex; flex-direction: column; gap: 14px; max-width: 320px; margin: 0 auto 20px;">
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto 20px;">
         <button class="btn-primary" onclick="window.navBuyer('buyer_mobile')">
-          ${renderIcon('user', '', 18)} Continue with Mobile
+          ${renderIcon('smartphone', '', 18)} Continue with Mobile
         </button>
 
-        <div style="font-size: 12px; color: var(--text-muted);">OR</div>
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; margin: 2px 0;">OR</div>
 
-        <button class="btn-secondary" onclick="window.continueAsGuest()">
-          ${renderIcon('store', '', 18)} Continue as Guest (Browse & Verify)
+        <button class="btn-secondary" style="font-weight: 700; border-color: var(--green); color: var(--green);" onclick="window.navBuyer('buyer_signin')">
+          ${renderIcon('user', '', 18)} Sign In
+        </button>
+
+        <button class="btn-secondary" style="font-weight: 700;" onclick="window.navBuyer('buyer_mobile')">
+          ${renderIcon('plus', '', 18)} Create New Account / Register
+        </button>
+
+        <button class="btn-secondary" style="margin-top: 4px; font-size: 12px;" onclick="window.continueAsGuest()">
+          ${renderIcon('store', '', 16)} Continue as Guest (Browse & Verify)
         </button>
       </div>
 
-      <div style="font-size: 12px; color: var(--text-muted); margin-top: 20px;">
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 14px;">
         Already registered? <a href="#" onclick="window.navBuyer('buyer_signin'); return false;" style="color: var(--copper); text-decoration: underline; font-weight: 600;">Sign In</a>
       </div>
     </div>
@@ -251,33 +261,98 @@ function renderScreen2B_BuyerSignIn() {
 
 // Screen B3 — Buyer Home / Discover Crafts
 function renderScreenB3_BuyerHome(products) {
+  const state = appState.data;
+  const searchQuery = (state.buyerSearchQuery || '').trim().toLowerCase();
+  const selectedCategory = state.buyerSelectedCategory || 'all';
+
+  // Standard Indian Craft Categories + any from products
+  const standardCategories = [
+    'All',
+    'Bamboo Craft',
+    'Madhubani Painting',
+    'Phulkari',
+    'Blue Pottery',
+    'Hand Block Printing',
+    'Terracotta',
+    'Wood Craft',
+    'Handloom'
+  ];
+
+  // Dynamic filter matching search & category
+  const filteredProducts = products.filter(p => {
+    // 1. Category check
+    const matchesCategory = (
+      selectedCategory === 'all' ||
+      selectedCategory.toLowerCase() === 'all crafts' ||
+      selectedCategory.toLowerCase() === 'all categories' ||
+      p.category.toLowerCase() === selectedCategory.toLowerCase()
+    );
+    if (!matchesCategory) return false;
+
+    // 2. Search check
+    if (!searchQuery) return true;
+
+    const inTitle = (p.title || '').toLowerCase().includes(searchQuery);
+    const inArtisan = (p.artisanName || '').toLowerCase().includes(searchQuery);
+    const inCategory = (p.category || '').toLowerCase().includes(searchQuery);
+    const inMaterials = Array.isArray(p.materials) && p.materials.some(m => m.toLowerCase().includes(searchQuery));
+    const inTags = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(searchQuery));
+    const inDesc = (p.description || '').toLowerCase().includes(searchQuery);
+
+    return inTitle || inArtisan || inCategory || inMaterials || inTags || inDesc;
+  });
+
   return `
     <div style="padding: 20px;">
       <!-- Search Header -->
       <div style="margin-bottom: 16px;">
         <h2 style="font-size: 21px; font-weight: 800;">Discover Handmade Crafts</h2>
-        <div style="font-size: 13px; color: var(--text-secondary);">Meet the master artisans behind them.</div>
+        <div style="font-size: 13px; color: var(--text-secondary);">
+          Meet the master artisans behind them. (${filteredProducts.length} ${filteredProducts.length === 1 ? 'craft available' : 'crafts available'})
+        </div>
       </div>
 
       <!-- Search Input -->
       <div style="margin-bottom: 16px; position: relative;">
-        <div style="position: absolute; left: 14px; top: 12px; color: var(--text-muted);">
+        <div style="position: absolute; left: 14px; top: 12px; color: var(--text-muted); pointer-events: none;">
           ${renderIcon('search', '', 18)}
         </div>
-        <input type="text" class="form-input" placeholder="Search crafts or artisans (e.g., Bamboo, Madhubani)..." style="padding-left: 42px;" onkeyup="window.filterCrafts(this.value)">
+        <input type="text" id="buyer_search_input" class="form-input"
+               placeholder="Search product, artisan, craft, or material..."
+               style="padding-left: 42px; padding-right: 36px;"
+               value="${state.buyerSearchQuery || ''}"
+               oninput="window.filterCrafts(this.value)">
+        ${state.buyerSearchQuery ? `
+          <button onclick="window.clearBuyerSearch()" title="Clear search" aria-label="Clear search"
+                  style="position: absolute; right: 10px; top: 10px; background: none; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; padding: 2px 6px;">
+            ✕
+          </button>
+        ` : ''}
       </div>
 
       <!-- Category Filter Pills -->
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.05em;">
-        Explore by Craft
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">
+          Explore by Craft
+        </div>
+        ${(selectedCategory !== 'all' || state.buyerSearchQuery) ? `
+          <button onclick="window.clearAllBuyerFilters()" style="background: none; border: none; font-size: 11px; color: var(--terracotta); font-weight: 700; cursor: pointer; padding: 2px 4px;">
+            Reset Filters
+          </button>
+        ` : ''}
       </div>
 
       <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 20px; scrollbar-width: none;">
-        <button class="badge-pill badge-gold" style="cursor: pointer;" onclick="window.selectCategory('all')">All Crafts</button>
-        <button class="badge-pill badge-terracotta" style="cursor: pointer;" onclick="window.selectCategory('Bamboo Craft')">🧺 Bamboo</button>
-        <button class="badge-pill badge-emerald" style="cursor: pointer;" onclick="window.selectCategory('Pottery')">🏺 Pottery</button>
-        <button class="badge-pill badge-blue" style="cursor: pointer;" onclick="window.selectCategory('Weaving')">🧵 Weaving</button>
-        <button class="badge-pill badge-gold" style="cursor: pointer;" onclick="window.selectCategory('Painting')">🎨 Painting</button>
+        ${standardCategories.map(cat => {
+          const isSelected = (cat === 'All' && selectedCategory === 'all') || (selectedCategory.toLowerCase() === cat.toLowerCase());
+          return `
+            <button class="badge-pill ${isSelected ? 'badge-emerald' : 'badge-gold'}"
+                    style="cursor: pointer; padding: 6px 14px; font-size: 12px; font-weight: ${isSelected ? '700' : '600'}; white-space: nowrap; border: 1.5px solid ${isSelected ? 'var(--green)' : 'var(--border-medium)'}; ${isSelected ? 'background: var(--green); color: #fff;' : 'background: #fff; color: var(--text-primary);'}"
+                    onclick="window.selectCategory('${cat === 'All' ? 'all' : cat}')">
+              ${cat === 'All' ? 'All Categories' : cat}
+            </button>
+          `;
+        }).join('')}
       </div>
 
       <!-- QR Quick Verification CTA Card -->
@@ -294,16 +369,37 @@ function renderScreenB3_BuyerHome(products) {
         </button>
       </div>
 
-      <!-- Featured Crafts Listing -->
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.05em;">
-        Featured Crafts
+      <!-- Featured Crafts Listing Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">
+          Featured Crafts
+        </div>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">
+          Showing ${filteredProducts.length} of ${products.length}
+        </span>
       </div>
 
+      <!-- Crafts Cards Listing or Empty State -->
       <div id="crafts_container" style="display: flex; flex-direction: column; gap: 16px;">
-        ${products.map(p => `
+        ${filteredProducts.length === 0 ? `
+          <div class="craft-card" style="text-align: center; padding: 40px 20px; margin: 10px 0;">
+            <div style="font-size: 36px; margin-bottom: 8px;">🔍</div>
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">No products found</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; max-width: 280px; margin-left: auto; margin-right: auto;">
+              No crafts matched your filter. Try a different search term or select All Categories.
+            </p>
+            <button class="btn-secondary" style="font-size: 12px; padding: 7px 16px; width: auto; margin: 0 auto;" onclick="window.clearAllBuyerFilters()">
+              Clear Search & Filters
+            </button>
+          </div>
+        ` : filteredProducts.map(p => {
+          const artisan = (appState.data.artisans || []).find(a => a.id === p.artisanId) || { rating: p.rating, ratingCount: p.ratingCount };
+          const rating = (typeof artisan.rating === 'number') ? artisan.rating : 0;
+          const ratingCount = (typeof artisan.ratingCount === 'number') ? artisan.ratingCount : 0;
+          return `
           <div class="craft-card" style="padding: 0; overflow: hidden; cursor: pointer;" onclick="window.viewProductDetails('${p.id}')">
             <div style="height: 190px; width: 100%; overflow: hidden; position: relative; background: #000;">
-              <img src="${p.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+              <img src="${p.imageUrl}" alt="${p.title}" style="width: 100%; height: 100%; object-fit: cover;">
               <span class="badge-pill badge-emerald" style="position: absolute; top: 12px; right: 12px; background: rgba(16, 185, 129, 0.9); color: #fff;">
                 🌐 Product Passport
               </span>
@@ -315,8 +411,13 @@ function renderScreenB3_BuyerHome(products) {
                 <strong style="font-size: 16px; color: var(--copper);">₹${p.price}</strong>
               </div>
 
-              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                ${renderIcon('user', '', 14)} ${p.artisanName} • ${renderIcon('mappin', '', 12)} ${p.artisanLocation}
+              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                <span>${renderIcon('user', '', 14)} ${p.artisanName}</span>
+                <span style="font-weight: 700; color: var(--gold); font-size: 12px;">${ratingCount > 0 ? `⭐ ${rating} · ${ratingCount} ratings` : '⭐ 0 · No ratings yet'}</span>
+              </div>
+
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 4px;">
+                ${renderIcon('mappin', '', 12)} ${p.artisanLocation}
               </div>
 
               <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-light); padding-top: 10px;">
@@ -327,7 +428,7 @@ function renderScreenB3_BuyerHome(products) {
               </div>
             </div>
           </div>
-        `).join('')}
+        `;}).join('')}
       </div>
     </div>
   `;
@@ -335,6 +436,26 @@ function renderScreenB3_BuyerHome(products) {
 
 // Screen B4 — Buyer Product Details
 function renderScreenB4_ProductDetails(product) {
+  if (!product) {
+    return `
+      <div style="padding: 30px 20px; text-align: center;">
+        <div style="color: var(--copper); font-size: 32px; margin-bottom: 12px;">📦</div>
+        <h3 style="font-size: 18px; margin-bottom: 6px;">Product Not Found</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+          This product is no longer active in the CRAFTORA catalogue.
+        </p>
+        <button class="btn-primary" onclick="window.navBuyer('explore')">
+          Return to Marketplace
+        </button>
+      </div>
+    `;
+  }
+
+  const artisan = (appState.data.artisans || []).find(a => a.id === product.artisanId) || {
+    rating: product.rating || 4.8,
+    ratingCount: product.ratingCount || 24
+  };
+
   return `
     <div style="padding: 20px;">
       <!-- Hero Image -->
@@ -357,7 +478,9 @@ function renderScreenB4_ProductDetails(product) {
             <div style="font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 4px;">
               🧑‍🎨 ${product.artisanName}
             </div>
-            <div style="font-size: 11px; color: var(--text-secondary);">📍 ${product.artisanLocation}</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
+              📍 ${product.artisanLocation} • <span style="color: var(--gold); font-weight: 700;">${(artisan.ratingCount || 0) > 0 ? `⭐ ${artisan.rating || 0} · Based on ${artisan.ratingCount} ratings (Demo Data)` : '⭐ 0 · No ratings yet'}</span>
+            </div>
           </div>
         </div>
         <span style="font-size: 12px; color: var(--copper); font-weight: 700; display: flex; align-items: center; gap: 4px;">
@@ -377,6 +500,25 @@ function renderScreenB4_ProductDetails(product) {
         </div>
         <div style="font-size: 12px; display: flex; align-items: center; gap: 6px;">
           ${renderIcon('clock', '', 14)} <strong>Production Time:</strong> ${product.productionTimeDays} Days
+        </div>
+      </div>
+
+      <!-- Demo Buyer Rating Section -->
+      <div class="craft-card" style="margin-bottom: 16px; padding: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <h4 style="font-size: 13px; font-weight: 700;">Rate Artisan Craftsmanship</h4>
+          <span class="badge-pill badge-gold" style="font-size: 10px;">Demo Data</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 10px;">
+          Leave a verified prototype rating for ${product.artisanName}:
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${[1, 2, 3, 4, 5].map(star => `
+            <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; font-weight: 700; color: var(--gold); border-color: var(--gold);"
+                    onclick="window.submitArtisanRating('${product.artisanId}', ${star})">
+              ${star} ⭐
+            </button>
+          `).join('')}
         </div>
       </div>
 
@@ -414,7 +556,12 @@ function renderScreenB5_ArtisanStory(artisan, products) {
         <div style="font-size: 13px; color: var(--copper); font-weight: 600; margin-bottom: 6px;">
           🧺 ${artisan.craftCategory} • 📍 ${artisan.location}
         </div>
-        <span class="badge-pill badge-emerald">✓ Registered Artisan</span>
+        <div style="margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px; background: var(--bg-elevated); padding: 4px 12px; border-radius: var(--radius-full); font-size: 13px; font-weight: 700; color: var(--gold);">
+          ${(artisan.ratingCount || 0) > 0 ? `⭐ ${artisan.rating || 0} <span style="color: var(--text-secondary); font-size: 11px; font-weight: 500;">(Based on ${artisan.ratingCount} ratings · Demo Data)</span>` : `⭐ 0 <span style="color: var(--text-secondary); font-size: 11px; font-weight: 500;">(No ratings yet)</span>`}
+        </div>
+        <div>
+          <span class="badge-pill badge-emerald">✓ Registered Artisan</span>
+        </div>
       </div>
 
       <!-- About Story -->
@@ -461,6 +608,21 @@ function renderScreenB5_ArtisanStory(artisan, products) {
 
 // Screen B6 — Buyer View of Passport
 function renderScreenB6_BuyerPassport(product) {
+  if (!product) {
+    return `
+      <div style="padding: 30px 20px; text-align: center;">
+        <div style="color: var(--copper); font-size: 32px; margin-bottom: 12px;">📜</div>
+        <h3 style="font-size: 18px; margin-bottom: 6px;">Product Passport Inactive</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+          This product passport is no longer active in the CRAFTORA catalogue.
+        </p>
+        <button class="btn-primary" onclick="window.navBuyer('explore')">
+          Return to Marketplace
+        </button>
+      </div>
+    `;
+  }
+
   return `
     <div style="padding: 20px;">
       ${renderDigitalProductPassportCard(product, true)}
@@ -479,6 +641,21 @@ function renderScreenB7_QRScan() {
 
 // Screen B7 — State 2: Verified Product View (Post-Scan Authenticity Result)
 function renderScreenB7_QRScanResult(product) {
+  if (!product) {
+    return `
+      <div style="padding: 30px 20px; text-align: center;">
+        <div style="color: var(--copper); margin-bottom: 12px;">${renderIcon('alertCircle', '', 40)}</div>
+        <h3 style="font-size: 18px; margin-bottom: 6px; color: var(--text-primary);">Product Not Registered</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">
+          This QR code is not associated with an active registered product in the CRAFTORA catalogue.
+        </p>
+        <button class="btn-primary" onclick="window.navBuyer('explore')">
+          Return to Marketplace
+        </button>
+      </div>
+    `;
+  }
+
   return `
     <div style="padding: 20px;">
       <div class="craft-card craft-card-glow" style="text-align: center; border-color: var(--success); padding: 24px 18px;">
@@ -751,5 +928,44 @@ window.submitConnectInterest = (productId) => {
   appState.setBuyerScreen('connect_success');
 };
 
-window.filterCrafts = (query) => {};
-window.selectCategory = (cat) => {};
+window.filterCrafts = (query) => {
+  if (!appState.data) return;
+  appState.data.buyerSearchQuery = query;
+  appState.notify();
+  // Preserve cursor focus if the input element is active
+  setTimeout(() => {
+    const input = document.getElementById('buyer_search_input');
+    if (input && document.activeElement !== input) {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+  }, 10);
+};
+
+window.selectCategory = (cat) => {
+  if (!appState.data) return;
+  appState.data.buyerSelectedCategory = (!cat || cat === 'All' || cat === 'all' || cat === 'All Categories') ? 'all' : cat;
+  appState.notify();
+};
+
+window.clearBuyerSearch = () => {
+  if (!appState.data) return;
+  appState.data.buyerSearchQuery = '';
+  appState.notify();
+};
+
+window.clearAllBuyerFilters = () => {
+  if (!appState.data) return;
+  appState.data.buyerSearchQuery = '';
+  appState.data.buyerSelectedCategory = 'all';
+  appState.notify();
+};
+
+window.submitArtisanRating = (artisanId, stars) => {
+  const res = appState.rateArtisan(artisanId, stars);
+  if (res && res.success) {
+    alert(`Thank you! Demo rating of ${stars} stars recorded for artisan. Updated rating: ⭐ ${res.rating} (${res.ratingCount} ratings).`);
+  } else if (res && res.reason === 'artisan_self_rating_denied') {
+    alert('Artisans cannot rate themselves.');
+  }
+};

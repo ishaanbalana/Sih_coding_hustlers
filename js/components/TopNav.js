@@ -15,6 +15,8 @@ export function renderTopNav(showBack = false) {
   if (role === 'buyer') roleLabel = 'BUYER DISCOVERY';
   if (role === 'admin') roleLabel = 'ADMIN VERIFICATION';
 
+  const isLanding = (role === 'landing') || (role === 'artisan' && state.activeArtisanScreen === 'landing');
+
   return `
     <header class="craftora-header">
       <div style="display: flex; align-items: center; gap: 10px;">
@@ -28,9 +30,13 @@ export function renderTopNav(showBack = false) {
             </svg>
           </button>
         ` : ''}
-        <div>
-          <div class="brand-title">CRAFTORA</div>
-          <div class="brand-subtitle">${roleLabel}</div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="assets/craftora_logo.png" alt="CRAFTORA" style="height: 28px; width: auto; max-width: 125px; object-fit: contain; display: block;" />
+          ${!isLanding ? `
+            <div style="border-left: 1.5px solid var(--border-medium); padding-left: 8px; margin-left: 2px;">
+              <div class="brand-subtitle" style="font-size: 9px; letter-spacing: 0.08em; color: var(--copper); font-weight: 700; text-transform: uppercase;">${roleLabel}</div>
+            </div>
+          ` : ''}
         </div>
       </div>
 
@@ -55,68 +61,12 @@ window.toggleLanguage = () => {
 };
 
 window.historyBack = () => {
-  const state = appState.data;
-  const role = state.currentRole;
-
-  if (role === 'landing') return;
-
-  if (role === 'artisan') {
-    const current = state.activeArtisanScreen;
-    if (current === 'onboarding') {
-      appState.setRole('landing');
-      return;
-    }
-    // Simple back map
-    const backMap = {
-      onboarding_otp: 'onboarding',
-      profile_step1: 'onboarding_otp',
-      artisan_id_card: 'profile_step1',
-      welcome: 'artisan_id_card',
-      add_product: 'dashboard',
-      ai_analysis: 'add_product',
-      review_product: 'ai_analysis',
-      smart_pricing: 'review_product',
-      market_matches: 'smart_pricing',
-      passport: 'market_matches',
-      provenance: 'passport',
-      my_crafts: 'dashboard',
-      product_detail: 'my_crafts',
-      edit_product: 'product_detail',
-    };
-    appState.setArtisanScreen(backMap[current] || 'dashboard');
-  } else if (role === 'buyer') {
-    const current = state.activeBuyerScreen;
-    if (current === 'welcome') {
-      appState.setRole('landing');
-      return;
-    }
-    const backMap = {
-      buyer_mobile: 'welcome',
-      buyer_otp: 'buyer_mobile',
-      register: 'buyer_otp',
-      buyer_signin: 'welcome',
-      product_detail: 'explore',
-      artisan_story: 'product_detail',
-      passport: 'product_detail',
-      scan_qr: 'explore',
-      scan_qr_result: 'scan_qr',
-      connect: 'product_detail',
-      connect_success: 'explore',
-      profile: 'explore',
-    };
-    appState.setBuyerScreen(backMap[current] || 'explore');
-  } else if (role === 'admin') {
-    const current = state.activeAdminScreen;
-    if (current === 'login') {
-      appState.setRole('landing');
-      return;
-    }
-    const backMap = {
-      artisan_list: 'dashboard',
-      product_list: 'dashboard',
-      provenance_logs: 'dashboard',
-      review_detail: 'product_list',
-    };
-    appState.setAdminScreen(backMap[current] || 'dashboard');
+  if (typeof window.stopProductCameraStream === 'function') {
+    window.stopProductCameraStream();
   }
+  if (appState.data.productCameraActive) {
+    appState.data.productCameraActive = false;
+    appState.data.productCapturedPhoto = null;
+  }
+  appState.goBack();
 };
